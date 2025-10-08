@@ -1,47 +1,92 @@
-<div class="sidebar-container">
+<div class="sidebar-container" [class.collapsed]="isCollapsed">
   <div class="sidebar-header">
     <img src="assets/images/logo-fluxivamed-white.png" alt="FluxivaMed Logo" class="sidebar-logo" />
+    <button class="toggle-button" (click)="toggleSidebar()">
+      <i class="fas" [class.fa-angle-left]="!isCollapsed" [class.fa-angle-right]="isCollapsed"></i>
+    </button>
   </div>
 
   <nav class="sidebar-nav">
     <ul>
+      <li [attr.data-dropdown-name]="'gerenciamento'">
+        <div
+          class="menu-item"
+          (click)="toggleDropdown('gerenciamento', $event)"
+          [class.active]="activeDropdown === 'gerenciamento'"
+        >
+          <a class="main-link">
+            <i class="fas fa-tasks"></i>
+            <span *ngIf="!isCollapsed">Gerenciamento</span>
+            <i
+              class="fas fa-angle-down dropdown-icon"
+              [class.rotated]="activeDropdown === 'gerenciamento'"
+              *ngIf="!isCollapsed"
+            ></i>
+          </a>
+        </div>
+        <ul
+          #submenuRef
+          class="submenu"
+          [style.max-height]="activeDropdown === 'gerenciamento' && !isCollapsed ? 'auto' : '0px'"
+        >
+          <li>
+            <a routerLink="/dashboard/gerenciamento/medicos" routerLinkActive="active">
+              <i class="fas fa-user-md"></i>
+              <span>Médicos</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard/gerenciamento/hospitais" routerLinkActive="active">
+              <i class="fas fa-hospital"></i>
+              <span>Hospitais</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard/gerenciamento/especialidades" routerLinkActive="active">
+              <i class="fas fa-clinic-medical"></i>
+              <span>Especialidades</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
       <li>
-        <a routerLink="/dashboard/overview" routerLinkActive="active">
+        <a routerLink="/dashboard/overview" routerLinkActive="active" class="menu-item">
           <i class="fas fa-th-large"></i>
-          <span>Visão Geral</span>
+          <span *ngIf="!isCollapsed">Visão Geral</span>
         </a>
       </li>
       <li>
-        <a routerLink="/dashboard/meus-plantoes" routerLinkActive="active">
+        <a routerLink="/dashboard/meus-plantoes" routerLinkActive="active" class="menu-item">
           <i class="fas fa-calendar-alt"></i>
-          <span>Meus Plantões</span>
+          <span *ngIf="!isCollapsed">Meus Plantões</span>
         </a>
       </li>
       <li>
-        <a routerLink="/dashboard/buscar-plantoes" routerLinkActive="active">
+        <a routerLink="/dashboard/buscar-plantoes" routerLinkActive="active" class="menu-item">
           <i class="fas fa-search"></i>
-          <span>Buscar Plantões</span>
+          <span *ngIf="!isCollapsed">Buscar Plantões</span>
         </a>
       </li>
       <li>
-        <a routerLink="/dashboard/disponibilidade" routerLinkActive="active">
+        <a routerLink="/dashboard/disponibilidade" routerLinkActive="active" class="menu-item">
           <i class="fas fa-calendar-check"></i>
-          <span>Disponibilidade</span>
+          <span *ngIf="!isCollapsed">Disponibilidade</span>
         </a>
       </li>
       <li>
-        <a routerLink="/dashboard/perfil" routerLinkActive="active">
+        <a routerLink="/dashboard/perfil" routerLinkActive="active" class="menu-item">
           <i class="fas fa-user-md"></i>
-          <span>Meu Perfil</span>
+          <span *ngIf="!isCollapsed">Meu Perfil</span>
         </a>
       </li>
     </ul>
   </nav>
 
   <div class="sidebar-footer">
-    <a (click)="logout()">
+    <a (click)="logout()" class="menu-item">
       <i class="fas fa-sign-out-alt"></i>
-      <span>Sair</span>
+      <span *ngIf="!isCollapsed">Sair</span>
     </a>
   </div>
 </div>

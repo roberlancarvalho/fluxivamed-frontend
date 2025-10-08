@@ -1,13 +1,15 @@
 <div class="login-wrapper">
   <div class="left-panel">
-    <img src="assets/images/logo-fluxivamed.png" alt="FluxivaMed Logo" class="app-logo" />
+    <img src="assets/images/logo-fluxivamed-white.png" alt="FluxivaMed Logo" class="app-logo" />
     <p>Gestão inteligente de plantões médicos.</p>
 
     <div class="footer-text">
       Copyright © <span [textContent]="currentYear"></span>. Todos os direitos reservados.
-      Desenvolvido por <a href="https://technorth.com.br/" target="_blank">Tech North</a><br />
-      <a href="#">Política de Privacidade</a> |
-      <a href="#">Termos de Serviço</a>
+      Desenvolvido por <a href="https://technorth.com.br/" target="_blank">Tech North</a>
+      <div class="privacy-terms-links">
+        <a href="#">Política de Privacidade</a> |
+        <a href="#">Termos de Serviço</a>
+      </div>
     </div>
   </div>
 
@@ -45,7 +47,9 @@
           </div>
         </div>
 
-        <button type="submit">Entrar</button>
+        <button type="submit" [disabled]="!credentials.email || !credentials.password">
+          Entrar
+        </button>
         <a href="#" class="forgot-password">Esqueci minha senha</a>
       </form>
     </div>

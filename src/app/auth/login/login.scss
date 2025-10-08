@@ -1,9 +1,17 @@
+$scss-primary-blue: #4a90e2;
+$scss-accent-green: #50e3c2;
+$scss-light-gray: #f4f7f6;
+$scss-dark-text: #333;
+$scss-medium-gray: #ccc;
+$scss-border-color: #ddd;
+
 :host {
   --primary-blue: #4a90e2;
   --accent-green: #50e3c2;
   --light-gray: #f4f7f6;
   --dark-text: #333;
   --medium-gray: #ccc;
+  --border-color: #ddd;
 }
 
 .login-wrapper {
@@ -11,7 +19,6 @@
   grid-template-columns: 1fr 1fr;
   height: 100vh;
   font-family: 'Poppins', sans-serif;
-  // position: relative;
 }
 
 .left-panel {
@@ -30,14 +37,11 @@
     height: auto;
     margin-bottom: 0.5rem;
   }
-  // h1 {
-  //   font-size: 3rem;
-  //   font-weight: 700;
-  //   margin-bottom: 0.5rem;
-  // }
   p {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 300;
+    max-width: 90%;
+    line-height: 1;
   }
 }
 
@@ -50,28 +54,30 @@
 
 .login-container {
   width: 100%;
-  max-width: 400px;
-  padding: 3rem;
+  max-width: 450px;
+  padding: 3.5rem;
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 
   h2 {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     color: var(--dark-text);
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 1.8rem;
   }
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
 
   label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     font-weight: 500;
     color: var(--dark-text);
+    font-size: 0.95rem;
   }
 
   .input-icon-wrapper {
@@ -83,20 +89,23 @@
       top: 50%;
       transform: translateY(-50%);
       color: var(--medium-gray);
+      font-size: 1rem;
     }
 
     input {
       width: 100%;
-      padding: 0.8rem 0.8rem 0.8rem 40px;
+      padding: 0.9rem 0.9rem 0.9rem 48px;
       box-sizing: border-box;
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       font-family: 'Poppins', sans-serif;
-      transition: border-color 0.3s;
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
 
       &:focus {
         outline: none;
         border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(var(--primary-blue), 0.25);
       }
     }
   }
@@ -104,30 +113,38 @@
 
 button {
   width: 100%;
-  padding: 0.9rem;
+  padding: 1.1rem;
   background: linear-gradient(90deg, var(--primary-blue), var(--accent-green));
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.3s;
-  margin-top: 1rem;
+  transition: transform 0.2s, box-shadow 0.3s, opacity 0.3s;
+  margin-top: 1.5rem;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: linear-gradient(90deg, $scss-accent-green, darken($scss-medium-gray, 10%));
+    transform: none;
+    box-shadow: none;
   }
 }
 
 .forgot-password {
   display: block;
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 2rem; // Mais espaço
   color: var(--primary-blue);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.95rem; // Um pouco maior
 
   &:hover {
     text-decoration: underline;
@@ -142,7 +159,13 @@ button {
     display: none;
   }
   .right-panel {
-    background-color: transparent;
+    background-color: var(
+      --light-gray
+    ); // Mantém o fundo claro para evitar que a caixa "flutue" no vazio
+  }
+  .login-container {
+    max-width: 90%; // Ocupa mais espaço em telas pequenas
+    margin: 2rem auto; // Centraliza e dá um respiro
   }
 }
 
@@ -151,17 +174,22 @@ button {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 100%;
+  width: 90%; // Ocupa um pouco mais de largura do painel
   text-align: center;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem; // Um pouco menor para ser discreto
+  color: rgba(255, 255, 255, 0.6); // Um pouco mais transparente
 
   a {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
 
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .privacy-terms-links {
+    // Novo estilo para agrupar os links
+    margin-top: 0.5rem; // Espaçamento entre o copyright e os links
   }
 }

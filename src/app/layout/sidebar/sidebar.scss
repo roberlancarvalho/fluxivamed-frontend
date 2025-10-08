@@ -1,0 +1,102 @@
+/* src/app/layout/sidebar/sidebar.scss */
+:host {
+  display: block;
+  height: 100%;
+  background-color: #0d253f; // Um azul bem escuro, profissional
+  color: #adb5bd;
+}
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+// Cabeçalho com o logo
+.sidebar-header {
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  .sidebar-logo {
+    width: 150px;
+    height: auto;
+  }
+}
+
+// Navegação principal
+.sidebar-nav {
+  flex-grow: 1; // Empurra o rodapé para baixo
+  padding-top: 1rem;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.5rem;
+    color: #adb5bd;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: 500;
+
+    i {
+      width: 30px; // Alinha os ícones
+      font-size: 1.1rem;
+      margin-right: 0.5rem;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    // Estilo do link ATIVO
+    &.active {
+      background-color: #007bff; // Azul de destaque
+      color: #fff;
+      position: relative;
+
+      // Um pequeno detalhe visual
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background-color: #50E3C2; // Verde acento
+      }
+    }
+  }
+}
+
+// Rodapé com o botão de sair
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+  a {
+    display: flex;
+    align-items: center;
+    color: #adb5bd;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s;
+    font-weight: 500;
+
+    i {
+      width: 30px;
+      font-size: 1.1rem;
+      margin-right: 0.5rem;
+    }
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}

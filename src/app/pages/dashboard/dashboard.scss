@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr; 
+  height: 100%;
+}
+
+.sidebar {
+  flex-shrink: 0;
+}
+
+.main-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f4f7f6;
+}
+
+.header {
+  flex-shrink: 0;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}

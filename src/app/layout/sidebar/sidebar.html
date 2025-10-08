@@ -1,0 +1,47 @@
+<div class="sidebar-container">
+  <div class="sidebar-header">
+    <img src="assets/images/logo-fluxivamed-white.png" alt="FluxivaMed Logo" class="sidebar-logo" />
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li>
+        <a routerLink="/dashboard/overview" routerLinkActive="active">
+          <i class="fas fa-th-large"></i>
+          <span>Visão Geral</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/dashboard/meus-plantoes" routerLinkActive="active">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Meus Plantões</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/dashboard/buscar-plantoes" routerLinkActive="active">
+          <i class="fas fa-search"></i>
+          <span>Buscar Plantões</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/dashboard/disponibilidade" routerLinkActive="active">
+          <i class="fas fa-calendar-check"></i>
+          <span>Disponibilidade</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/dashboard/perfil" routerLinkActive="active">
+          <i class="fas fa-user-md"></i>
+          <span>Meu Perfil</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a (click)="logout()">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Sair</span>
+    </a>
+  </div>
+</div>

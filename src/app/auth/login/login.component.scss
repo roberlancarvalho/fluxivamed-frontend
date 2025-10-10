@@ -141,10 +141,10 @@ button {
 .forgot-password {
   display: block;
   text-align: center;
-  margin-top: 2rem; // Mais espaço
+  margin-top: 2rem;
   color: var(--primary-blue);
   text-decoration: none;
-  font-size: 0.95rem; // Um pouco maior
+  font-size: 0.95rem;
 
   &:hover {
     text-decoration: underline;
@@ -159,13 +159,11 @@ button {
     display: none;
   }
   .right-panel {
-    background-color: var(
-      --light-gray
-    ); // Mantém o fundo claro para evitar que a caixa "flutue" no vazio
+    background-color: var(--light-gray);
   }
   .login-container {
-    max-width: 90%; // Ocupa mais espaço em telas pequenas
-    margin: 2rem auto; // Centraliza e dá um respiro
+    max-width: 90%;
+    margin: 2rem auto;
   }
 }
 
@@ -174,10 +172,10 @@ button {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90%; // Ocupa um pouco mais de largura do painel
+  width: 90%;
   text-align: center;
-  font-size: 0.75rem; // Um pouco menor para ser discreto
-  color: rgba(255, 255, 255, 0.6); // Um pouco mais transparente
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
 
   a {
     color: rgba(255, 255, 255, 0.8);
@@ -189,7 +187,23 @@ button {
   }
 
   .privacy-terms-links {
-    // Novo estilo para agrupar os links
-    margin-top: 0.5rem; // Espaçamento entre o copyright e os links
+    margin-top: 0.5rem;
   }
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.general-error {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: rgba(#dc3545, 0.1);
+  border: 1px solid #dc3545;
 }

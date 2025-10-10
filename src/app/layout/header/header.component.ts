@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-header',
   imports: [],
-  templateUrl: './header.html',
-  styleUrl: './header.scss'
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.scss'
 })
 export class Header {
 

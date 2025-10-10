@@ -9,13 +9,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
-  templateUrl: './sidebar.html',
-  styleUrls: ['./sidebar.scss'],
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
   isCollapsed: boolean = false;
@@ -25,7 +26,11 @@ export class SidebarComponent {
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
 
-  constructor(private router: Router, private renderer: Renderer2) {}
+  constructor(
+    private router: Router,
+    private renderer: Renderer2,
+    private authService: AuthService
+  ) {}
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
@@ -72,6 +77,7 @@ export class SidebarComponent {
 
   logout(): void {
     localStorage.removeItem('accessToken');
-    this.router.navigate(['/login']);
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 }

@@ -1,1 +1,12 @@
-<p>Header aqui</p>
+<header class="header-container">
+  <div class="header-content">
+    <h1 class="page-title">{{ pageTitle }}</h1>
+    <div class="user-info">
+      <span class="greeting-text">Olá,</span>
+      <span class="user-name">{{ userName }}</span>
+      <button class="logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
+    </div>
+  </div>
+</header>

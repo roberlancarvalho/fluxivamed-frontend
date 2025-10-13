@@ -1,0 +1,42 @@
+<div class="plantao-list-container">
+  <h2>Meus Plantões</h2>
+
+  <div *ngIf="plantoes$ | async as plantoes; else loadingOrEmpty">
+    <div *ngIf="plantoes.length > 0; else emptyList">
+      <table class="plantao-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Local</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Valor</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let plantao of plantoes">
+            <td>{{ plantao.id }}</td>
+            <td>{{ plantao.nomeHospital }}</td>
+            <td>{{ plantao.inicio | date : 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
+            <td>{{ plantao.status }}</td>
+            <td>
+              <button class="btn btn-details">Detalhes</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <ng-template #loadingOrEmpty>
+    <p>Carregando plantões...</p>
+  </ng-template>
+
+  <ng-template #emptyList>
+    <p>Nenhum plantão encontrado.</p>
+  </ng-template>
+</div>

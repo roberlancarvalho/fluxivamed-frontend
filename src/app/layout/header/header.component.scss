@@ -1,0 +1,64 @@
+/* src/app/layout/header/header.component.scss */
+.header-container {
+  background-color: #ffffff; /* Fundo branco para o header */
+  padding: 15px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  display: flex;
+  justify-content: space-between; /* Alinha o título à esquerda e o usuário à direita */
+  align-items: center;
+  height: 60px; /* Altura fixa para o header */
+  border-bottom: 1px solid #eee; /* Linha sutil na parte inferior */
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.page-title {
+  font-size: 1.5em;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espaçamento entre os elementos */
+}
+
+.greeting-text {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.user-name {
+  font-weight: bold;
+  color: #007bff; /* Ou a cor primária do seu tema */
+  font-size: 1em;
+}
+
+.logout-btn {
+  background-color: #dc3545; /* Cor vermelha para logout */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Espaço entre ícone e texto */
+
+  &:hover {
+    background-color: #c82333;
+  }
+}
+
+/* Estilo para ícones, se estiver usando Font Awesome */
+.fas {
+  margin-right: 5px;
+}

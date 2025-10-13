@@ -2,12 +2,12 @@ import { Component, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../../layout/sidebar/sidebar.component';
-import { Header } from '../../layout/header/header.component';
+import { HeaderComponent } from '../../layout/header/header.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, SidebarComponent, Header],
+  imports: [CommonModule, RouterOutlet, SidebarComponent, HeaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

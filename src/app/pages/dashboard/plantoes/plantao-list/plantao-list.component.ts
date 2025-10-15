@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PlantaoService, Plantao } from '../../../../core/services/plantao.service';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Plantao, PlantaoService } from '../../../../core/services/plantao.service';
 
 @Component({
   selector: 'app-plantao-list',

@@ -1,0 +1,66 @@
+<div class="buscar-plantoes-container">
+  <h2>Buscar Plantões Disponíveis</h2>
+
+  <form [formGroup]="filtroForm" (ngSubmit)="onFiltroSubmit()" class="filtro-form">
+    <div class="form-group">
+      <label for="hospitalId">Local</label>
+      <select id="hospitalId" formControlName="hospitalId">
+        <option value="">Todos</option>
+        <option *ngFor="let hospital of hospitais" [value]="hospital.id">
+          {{ hospital.nome }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="data">Data</label>
+      <input type="date" id="data" formControlName="data" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Buscar</button>
+  </form>
+
+  <div *ngIf="plantoesPaginados$ | async as pagina; else loading">
+    <div *ngIf="pagina.content && pagina.content.length > 0; else noResults">
+      <table class="plantao-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Local</th>
+            <th>Horário</th>
+            <th>Valor</th>
+            <th>Ações</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let plantao of pagina.content">
+            <td>{{ plantao.id }}</td>
+            <td>{{ plantao.nomeHospital }}</td>
+            <td>
+              {{ plantao.inicio | date : 'dd/MM/yyyy - HH:mm' }} ~
+              {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
+            </td>
+            <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
+            <td>{{ plantao.status }}</td>
+            <td>
+              <button class="btn btn-success">Candidatar-se</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="paginacao">
+        <span>Página {{ pagina.number + 1 }} de {{ pagina.totalPages }}</span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <p>Carregando plantões disponíveis...</p>
+  </ng-template>
+
+  <ng-template #noResults>
+    <p>Nenhum plantão encontrado com os filtros selecionados.</p>
+  </ng-template>
+</div>

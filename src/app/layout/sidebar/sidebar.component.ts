@@ -1,13 +1,13 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
+  EventEmitter,
+  Output,
+  QueryList,
   Renderer2,
   ViewChildren,
-  QueryList,
-  Output,
-  EventEmitter,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 

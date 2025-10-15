@@ -1,8 +1,21 @@
 <div class="sidebar-container" [class.collapsed]="isCollapsed">
   <div class="sidebar-header">
-    <img src="assets/images/logo-fluxivamed-white.png" alt="FluxivaMed Logo" class="sidebar-logo" />
+    <a routerLink="/dashboard/overview" class="sidebar-logo-link">
+      <img
+        *ngIf="!isCollapsed"
+        src="assets/images/logo-fluxivamed-white.png"
+        alt="FluxivaMed Logo"
+        class="sidebar-logo"
+      />
+      <img
+        *ngIf="isCollapsed"
+        src="assets/images/fluxivamed-symbol.png"
+        alt="FluxivaMed Symbol"
+        class="sidebar-logo-symbol"
+      />
+    </a>
     <button class="toggle-button" (click)="toggleSidebar()">
-      <i class="fas" [class.fa-angle-left]="!isCollapsed" [class.fa-angle-right]="isCollapsed"></i>
+      <i class="fas" [class.fa-bars]="!isCollapsed" [class.fa-angle-right]="isCollapsed"></i>
     </button>
   </div>
 
@@ -76,8 +89,7 @@
       </li>
       <li>
         <a routerLink="/dashboard/perfil" routerLinkActive="active" class="menu-item">
-          <i class="fas fa-user-md"></i>
-          <span *ngIf="!isCollapsed">Meu Perfil</span>
+          <i class="fas fa-user-circle"></i> <span *ngIf="!isCollapsed">Meu Perfil</span>
         </a>
       </li>
     </ul>

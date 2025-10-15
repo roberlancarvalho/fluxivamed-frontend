@@ -1,7 +1,6 @@
-// src/app/layout/header/header.component.ts
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, NavigationEnd, Router, Data } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Data, NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -50,8 +49,9 @@ export class HeaderComponent implements OnInit {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1])); 
+        console.log("JWT Payload:", payload);
 
-        this.userName = payload.name || payload.sub || 'Médico';
+        this.userName = payload.fullName || payload.sub || 'Médico';
       } catch (e) {
         console.error('Erro ao decodificar JWT para obter o nome do usuário:', e);
         this.userName = 'Usuário Inválido';

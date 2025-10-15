@@ -37,6 +37,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
   height: 100%;
   width: 100%;
   transition: all 0.3s ease;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-container.collapsed {
@@ -44,17 +45,23 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
   .sidebar-footer span {
     display: none;
     opacity: 0;
+    align-items: center;
     transition: opacity 0.3s ease;
   }
 
   .sidebar-header {
     justify-content: center;
     padding: 1.2rem 0;
-    
 
     .sidebar-logo {
+      display: none;
+    }
+
+    .sidebar-logo-symbol {
+      display: block;
       width: 40px;
-      margin-bottom: 0;
+      height: auto;
+      margin: 0;
     }
   }
 
@@ -93,10 +100,22 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
 
+  .sidebar-logo-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
   .sidebar-logo {
     width: 150px;
     height: auto;
     transition: all 0.3s ease;
+    display: block;
+  }
+
+    .sidebar-logo-symbol {
+    display: none;
   }
 
   .toggle-button {
@@ -112,7 +131,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     cursor: pointer;
     position: absolute;
     right: -15px;
-    top: 50%;
+    top: 100%;
     transform: translateY(-50%);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: background-color 0.2s, right 0.3s ease;
@@ -131,6 +150,9 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
 .sidebar-nav {
   flex-grow: 1;
   padding-top: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
   ul {
     list-style: none;
@@ -154,8 +176,8 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     white-space: nowrap;
 
     i {
-      width: 30px;
-      font-size: 1.1rem;
+      width: auto;
+      font-size: 1.2rem;
       margin-right: 0.5rem;
       transition: margin-right 0.3s ease;
     }
@@ -224,6 +246,9 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
 
       i {
         margin-right: 0.5rem;
+        align-items: center;
+        width: 20px;
+        font-size: 1rem;
       }
 
       &:hover {

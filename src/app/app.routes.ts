@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
 import { AuthComponent } from './auth/auth/auth.component';
 import { LoginComponent } from './auth/login/login.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { authGuard } from './core/guards/auth-guard';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { OverviewComponent } from './pages/dashboard/overview/overview.component';
-import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list.component/plantao-list.component';
+import { BuscarPlantoesComponent } from './pages/dashboard/plantoes/buscar-plantoes/buscar-plantoes.component';
+import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list/plantao-list.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
@@ -13,7 +14,7 @@ export const routes: Routes = [
     path: 'auth',
     component: AuthComponent,
     children: [
-      { path: 'login', component: LoginComponent, title: 'Acesso ao Sistema' },
+      { path: 'login', component: LoginComponent, title: 'FluxivaMed' },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
@@ -24,8 +25,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
-      { path: 'overview', component: OverviewComponent, title: 'Visão Geral' },
-      { path: 'plantoes', component: PlantaoListComponent, title: 'Meus Plantões' },
+      { path: 'overview', component: OverviewComponent, title: 'FluxivaMed - Visão Geral' },
+      { path: 'plantoes', component: PlantaoListComponent, title: 'FluxivaMed - Meus Plantões' },
+      {
+        path: 'buscar-plantoes',
+        component: BuscarPlantoesComponent,
+        title: 'FluxivaMed - Buscar Plantões',
+      },
     ],
   },
   { path: '**', redirectTo: '/auth/login' },

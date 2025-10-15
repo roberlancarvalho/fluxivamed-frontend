@@ -27,6 +27,13 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials, httpOptions);
   }
 
+  isLoggedIn(): boolean {
+    // Verifica se há um token de acesso válido no localStorage
+    // Você pode adicionar mais validações aqui, como verificar a expiração do token
+    const token = localStorage.getItem('accessToken');
+    return !!token; // Retorna true se o token existir, false caso contrário
+  }
+
   logout(): void {
     localStorage.removeItem('accessToken');
     console.log('Logout efetuado. Token removido.');

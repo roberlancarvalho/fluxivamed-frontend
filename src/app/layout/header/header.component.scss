@@ -62,3 +62,27 @@
 .fas {
   margin-right: 5px;
 }
+/* Responsividade */
+@media (max-width: 600px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto; /* Altura automática para dispositivos móveis */
+    padding: 10px 15px;
+  }
+
+  .page-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+  }
+
+  .user-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 0.8em;
+  }
+}

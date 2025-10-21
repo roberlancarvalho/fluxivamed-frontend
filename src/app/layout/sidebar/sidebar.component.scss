@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $scss-primary-blue: #4a90e2;
 $scss-accent-green: #50e3c2;
 $scss-light-gray: #f4f7f6;
@@ -114,7 +116,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     display: block;
   }
 
-    .sidebar-logo-symbol {
+  .sidebar-logo-symbol {
     display: none;
   }
 
@@ -138,7 +140,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     z-index: 1001;
 
     &:hover {
-      background-color: darken($scss-primary-blue, 10%);
+      background-color: color.scale($scss-primary-blue, $lightness: -10%);
     }
 
     i {

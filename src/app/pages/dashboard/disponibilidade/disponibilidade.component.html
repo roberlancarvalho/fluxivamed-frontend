@@ -2,11 +2,11 @@
   <h2>Minha Disponibilidade</h2>
 
   <div class="card">
-    <h3>Adicionar Períodos de Dinponibilidade</h3>
+    <h3>Adicionar Períodos de Disponibilidade</h3>
     <form [formGroup]="disponibilidadeForm" (ngSubmit)="salvarDisponibilidade()">
       <div formArrayName="periodos">
         <div
-          *ngFor="let periodo of periodos.controls; let i = index"
+          *ngFor="let periodo of periodosFormArray.controls; let i = index"
           [formGroupName]="i"
           class="periodo-form-group"
         >
@@ -32,9 +32,9 @@
           </div>
           <button
             type="button"
-            (click)="removerPeriodo(i)"
+            (click)="removerPeriodoDoFormulario(i)"
             class="btn btn-danger btn-remove"
-            *ngIf="periodos.length > 1"
+            *ngIf="periodosFormArray.length > 1"
           >
             Remover
           </button>
@@ -42,7 +42,7 @@
       </div>
 
       <div class="actions">
-        <button type="button" (click)="adicionarPeriodo()" class="btn btn-secondary">
+        <button type="button" (click)="adicionarPeriodoNoFormulario()" class="btn btn-secondary">
           Adicionar Outro Período
         </button>
         <button type="submit" class="btn btn-primary" [disabled]="disponibilidadeForm.invalid">
@@ -54,15 +54,29 @@
 
   <div class="card">
     <h3>Meus Períodos Salvos</h3>
-    <div *ngIf="disponibilidadesAtuais$ | async as disponibilidades; else loading">
-      <ul *ngIf="disponibilidades.length > 0; else noResults" class="disponibilidade-list">
-        <li *ngFor="let periodo of disponibilidades">
-          De <strong>{{ periodo.inicio | date : 'dd/MM/yyyy HH:mm' }}</strong> até
-          <strong>{{ periodo.fim | date : 'dd/MM/yyyy HH:mm' }}</strong>
-        </li>
-      </ul>
+    <div *ngIf="periodosSalvos.length === 0; else showPeriodosSalvos">
+      <p>Nenhum período de disponibilidade salvo ainda.</p>
     </div>
-    <ng-template #loading><p>Carregando disponibilidades...</p></ng-template>
-    <ng-template #noResults><p>Nenhum período de disponibilidade salvo.</p></ng-template>
+
+    <ng-template #showPeriodosSalvos>
+      <div class="disponibilidade-list-container">
+        <div *ngFor="let periodo of periodosSalvos" class="disponibilidade-item">
+          <div class="periodo-info">
+            <i class="fas fa-calendar-alt periodo-icon"></i>
+            <div class="periodo-datas">
+              <span class="data-hora"
+                ><strong>Início:</strong> {{ periodo.dataInicio | date : 'dd/MM/yyyy HH:mm' }}</span
+              >
+              <span class="data-hora"
+                ><strong>Fim:</strong> {{ periodo.dataFim | date : 'dd/MM/yyyy HH:mm' }}</span
+              >
+            </div>
+          </div>
+          <button class="btn btn-icon btn-danger" (click)="removerPeriodoSalvo(periodo.id)">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    </ng-template>
   </div>
 </div>

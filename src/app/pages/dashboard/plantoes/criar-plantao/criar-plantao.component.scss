@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $primary-color: #007bff;
 $secondary-color: #6c757d;
 $background-color: #f8f9fa;
@@ -14,14 +16,14 @@ $danger-color: #dc3545;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   max-width: 600px;
-  margin: 2rem auto; // Centraliza o formulário na página
+  margin: 2rem auto;
 }
 
 .criar-plantao-container {
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: var(--surface-card); // Exemplo de variável do PrimeNG
+  background-color: var(--surface-card);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
@@ -85,11 +87,11 @@ $danger-color: #dc3545;
     transition: background-color 0.2s;
 
     &:hover:not(:disabled) {
-      background-color: var(--primary-hover-color); // Cor de hover do tema
+      background-color: color.adjust($primary-color, $lightness: -10%);
     }
 
     &:disabled {
-      background-color: var(--surface-400); // Cor para desabilitado
+      background-color: var(--surface-400);
       cursor: not-allowed;
     }
   }
@@ -104,10 +106,10 @@ $danger-color: #dc3545;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
-    margin-top: 1rem; // Espaço extra antes do botão
+    margin-top: 1rem;
 
     &:hover {
-      background-color: darken($primary-color, 10%);
+      background-color: color.adjust($primary-color, $lightness: -10%);
     }
 
     &:disabled {

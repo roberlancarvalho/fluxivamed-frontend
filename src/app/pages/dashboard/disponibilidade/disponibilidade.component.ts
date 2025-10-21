@@ -1,37 +1,41 @@
-import { CommonModule, DatePipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable, tap } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MedicoService, PeriodoDisponibilidadeMedico } from '../../../core/services/medico.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-disponibilidade',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, ReactiveFormsModule, MatSnackBarModule],
   templateUrl: './disponibilidade.component.html',
   styleUrls: ['./disponibilidade.component.scss'],
 })
 export class DisponibilidadeComponent implements OnInit {
   disponibilidadeForm: FormGroup;
-  disponibilidadesAtuais$!: Observable<PeriodoDisponibilidadeMedico[]>;
+  periodosSalvos: PeriodoDisponibilidadeMedico[] = [];
 
-  constructor(private fb: FormBuilder, private medicoService: MedicoService) {
+  constructor(
+    private fb: FormBuilder,
+    private medicoService: MedicoService,
+    private snackBar: MatSnackBar
+  ) {
     this.disponibilidadeForm = this.fb.group({
       periodos: this.fb.array([]),
     });
   }
 
   ngOnInit(): void {
-    this.carregarDisponibilidades();
-    this.adicionarPeriodo();
+    this.adicionarPeriodoNoFormulario();
+    this.carregarPeriodosSalvos();
   }
 
-  get periodos(): FormArray {
+  get periodosFormArray(): FormArray {
     return this.disponibilidadeForm.get('periodos') as FormArray;
   }
 
-  novoPeriodoFormGroup(): FormGroup {
+  criarNovoPeriodoFormGroup(): FormGroup {
     return this.fb.group({
       dataInicio: ['', Validators.required],
       dataFim: ['', Validators.required],
@@ -40,60 +44,99 @@ export class DisponibilidadeComponent implements OnInit {
     });
   }
 
-  adicionarPeriodo(): void {
-    this.periodos.push(this.novoPeriodoFormGroup());
+  adicionarPeriodoNoFormulario(): void {
+    this.periodosFormArray.push(this.criarNovoPeriodoFormGroup());
   }
 
-  removerPeriodo(index: number): void {
-    this.periodos.removeAt(index);
+  removerPeriodoDoFormulario(index: number): void {
+    this.periodosFormArray.removeAt(index);
   }
 
-  carregarDisponibilidades(): void {
-    this.disponibilidadesAtuais$ = this.medicoService.getMinhaDisponibilidade();
+  carregarPeriodosSalvos(): void {
+    this.medicoService.getMinhaDisponibilidade().subscribe(
+      (data) => {
+        this.periodosSalvos = data.map((p) => ({
+          ...p,
+          id: p.id,
+          dataInicio: new Date(p.inicio),
+          dataFim: new Date(p.fim),
+        }));
+        console.log('Períodos de disponibilidade carregados:', this.periodosSalvos);
+      },
+      (error) => {
+        console.error('Erro ao carregar períodos de disponibilidade:', error);
+        this.snackBar.open('Erro ao carregar períodos de disponibilidade.', 'Fechar', {
+          duration: 3000,
+        });
+      }
+    );
   }
 
   salvarDisponibilidade(): void {
     if (this.disponibilidadeForm.invalid) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
-      this.disponibilidadeForm.markAllAsTouched();
+      this.snackBar.open('Por favor, preencha todos os campos obrigatórios.', 'Fechar', {
+        duration: 3000,
+      });
       return;
     }
 
-    const formPeriodos = this.disponibilidadeForm.value.periodos;
+    const periodosParaEnviar: { inicio: string; fim: string }[] = this.periodosFormArray.value.map(
+      (p: any) => {
+        const dataInicio = new Date(p.dataInicio);
+        const [hInicio, mInicio] = p.horaInicio.split(':').map(Number);
+        dataInicio.setHours(hInicio, mInicio);
 
-    const payload: PeriodoDisponibilidadeMedico[] = formPeriodos.map((p: any) => {
-      const inicioISO = `${p.dataInicio}T${p.horaInicio}:00`;
-      const fimISO = `${p.dataFim}T${p.horaFim}:00`;
+        const dataFim = new Date(p.dataFim);
+        const [hFim, mFim] = p.horaFim.split(':').map(Number);
+        dataFim.setHours(hFim, mFim);
 
-      return {
-        inicio: inicioISO,
-        fim: fimISO,
-      };
+        return {
+          inicio: dataInicio.toISOString(),
+          fim: dataFim.toISOString(),
+        };
+      }
+    );
+
+    this.medicoService.salvarMinhaDisponibilidade(periodosParaEnviar).subscribe(
+      () => {
+        this.snackBar.open('Disponibilidade salva com sucesso!', 'Fechar', {
+          duration: 3000,
+        });
+        this.disponibilidadeForm.reset();
+        this.periodosFormArray.clear();
+        this.adicionarPeriodoNoFormulario();
+        this.carregarPeriodosSalvos();
+      },
+      (error) => {
+        console.error('Erro ao salvar disponibilidade:', error);
+        this.snackBar.open('Erro ao salvar disponibilidade.', 'Fechar', {
+          duration: 3000,
+        });
+      }
+    );
+  }
+
+  removerPeriodoSalvo(periodoId: number | undefined): void {
+    if (!periodoId) {
+      this.snackBar.open('ID do período inválido.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    if (!confirm('Tem certeza que deseja remover este período de disponibilidade?')) {
+      return;
+    }
+
+    this.medicoService.deleteDisponibilidade(periodoId).subscribe({
+      next: () => {
+        this.snackBar.open('Período removido com sucesso!', 'Fechar', { duration: 3000 });
+        this.carregarPeriodosSalvos();
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Erro ao remover período:', err);
+        this.snackBar.open(err.error?.message || 'Erro ao remover período.', 'Fechar', {
+          duration: 3000,
+        });
+      },
     });
-
-    this.medicoService
-      .salvarMinhaDisponibilidade(payload)
-      .pipe(
-        tap(() => {
-          this.periodos.clear();
-          this.adicionarPeriodo();
-          this.carregarDisponibilidades();
-          alert('Disponibilidade salva com sucesso!');
-        })
-      )
-      .subscribe({
-        error: (err: HttpErrorResponse) => {
-          console.error('Erro ao salvar disponibilidade:', err);
-          let errorMessage = 'Erro ao salvar. Tente novamente.';
-          if (err.error && typeof err.error === 'object' && err.error.message) {
-            errorMessage = `Erro: ${err.error.message}`;
-          } else if (err.status === 400) {
-            errorMessage = 'Verifique os dados. Ocorreu um erro de validação.';
-          } else if (err.message) {
-            errorMessage = `Erro de rede: ${err.message}`;
-          }
-          alert(errorMessage);
-        },
-      });
   }
 }

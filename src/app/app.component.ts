@@ -24,7 +24,9 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn();
+    this.authService.isLoggedIn$().subscribe((loggedIn: boolean) => {
+      this.isLoggedIn = loggedIn;
+    });
 
     this.router.events
       .pipe(

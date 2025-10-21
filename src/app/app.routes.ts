@@ -6,8 +6,8 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DisponibilidadeComponent } from './pages/dashboard/disponibilidade/disponibilidade.component';
 import { OverviewComponent } from './pages/dashboard/overview/overview.component';
 import { BuscarPlantoesComponent } from './pages/dashboard/plantoes/buscar-plantoes/buscar-plantoes.component';
-import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list/plantao-list.component';
 import { CriarPlantaoComponent } from './pages/dashboard/plantoes/criar-plantao/criar-plantao.component';
+import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list/plantao-list.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
@@ -39,13 +39,14 @@ export const routes: Routes = [
         component: DisponibilidadeComponent,
         title: 'FluxivaMed - Minha Disponibilidade',
       },
-
       {
         path: 'plantoes/criar',
         component: CriarPlantaoComponent,
-        canActivate: [authGuard],
-        data: { roles: ['ADMIN', 'GESTOR_HOSPITAL', 'PLANTONISTA'] },
+        title: 'FluxivaMed - Criar Plantão',
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN', 'ESCALISTA'] },
       },
+      // Adicione a rota de Perfil aqui se necessário
+      // { path: 'perfil', component: PerfilComponent, title: 'FluxivaMed - Meu Perfil' },
     ],
   },
   { path: '**', redirectTo: '/auth/login' },

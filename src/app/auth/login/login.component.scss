@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $scss-primary-blue: #4a90e2;
 $scss-accent-green: #50e3c2;
 $scss-light-gray: #f4f7f6;
@@ -132,7 +134,11 @@ button {
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-    background: linear-gradient(90deg, $scss-accent-green, darken($scss-medium-gray, 10%));
+    background: linear-gradient(
+      90deg,
+      $scss-accent-green,
+      color.adjust($scss-medium-gray, $lightness: -10%)
+    );
     transform: none;
     box-shadow: none;
   }

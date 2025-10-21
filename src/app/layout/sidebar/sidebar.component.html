@@ -21,7 +21,10 @@
 
   <nav class="sidebar-nav">
     <ul>
-      <li [attr.data-dropdown-name]="'gerenciamento'">
+      <li
+        *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')"
+        [attr.data-dropdown-name]="'gerenciamento'"
+      >
         <div
           class="menu-item"
           (click)="toggleDropdown('gerenciamento', $event)"
@@ -70,25 +73,26 @@
         </a>
       </li>
 
-      <li>
-        <a routerLink="/dashboard/plantoes/criar" routerLinkActive="active-link" class="menu-item">
-          <i class="pi pi-plus-circle"></i> <span>Criar Plantão</span>
+      <li *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')">
+        <a routerLink="/dashboard/plantoes/criar" routerLinkActive="active" class="menu-item">
+          <i class="fas fa-plus-circle"></i>
+          <span *ngIf="!isCollapsed">Criar Plantão</span>
         </a>
       </li>
 
-      <li>
+      <li *ngIf="hasRole('MEDICO')">
         <a routerLink="/dashboard/plantoes" routerLinkActive="active" class="menu-item">
           <i class="fas fa-calendar-alt"></i>
           <span *ngIf="!isCollapsed">Meus Plantões</span>
         </a>
       </li>
-      <li>
+      <li *ngIf="hasRole('MEDICO')">
         <a routerLink="/dashboard/buscar-plantoes" routerLinkActive="active" class="menu-item">
           <i class="fas fa-search"></i>
           <span *ngIf="!isCollapsed">Buscar Plantões</span>
         </a>
       </li>
-      <li>
+      <li *ngIf="hasRole('MEDICO')">
         <a routerLink="/dashboard/disponibilidade" routerLinkActive="active" class="menu-item">
           <i class="fas fa-calendar-check"></i>
           <span *ngIf="!isCollapsed">Disponibilidade</span>
@@ -96,7 +100,8 @@
       </li>
       <li>
         <a routerLink="/dashboard/perfil" routerLinkActive="active" class="menu-item">
-          <i class="fas fa-user-circle"></i> <span *ngIf="!isCollapsed">Meu Perfil</span>
+          <i class="fas fa-user-circle"></i>
+          <span *ngIf="!isCollapsed">Meu Perfil</span>
         </a>
       </li>
     </ul>

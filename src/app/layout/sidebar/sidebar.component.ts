@@ -19,9 +19,6 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
-  hasRole(arg0: string): any {
-    throw new Error('Method not implemented.');
-  }
   isCollapsed: boolean = false;
   activeDropdown: string | null = null;
 
@@ -35,6 +32,10 @@ export class SidebarComponent {
     private authService: AuthService
   ) {}
 
+  public hasRole(role: string): boolean {
+    return this.authService.hasRole(role);
+  }
+
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
     if (this.isCollapsed) {
@@ -46,7 +47,6 @@ export class SidebarComponent {
 
   toggleDropdown(dropdownName: string, event: Event): void {
     event.stopPropagation();
-
     if (this.isCollapsed) return;
 
     if (this.activeDropdown === dropdownName) {
@@ -79,7 +79,6 @@ export class SidebarComponent {
   }
 
   logout(): void {
-    localStorage.removeItem('accessToken');
     this.authService.logout();
     this.router.navigate(['/auth/login']);
   }

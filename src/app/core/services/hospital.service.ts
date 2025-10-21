@@ -6,25 +6,8 @@ import { environment } from '../../../environments/environment';
 export interface Hospital {
   id: number;
   nome: string;
-  cnpj: string;
-  endereco: string;
-}
-
-export interface PlantaoRequest {
-  hospitalId: number;
-  inicio: string;
-  fim: string;
-  valor: number;
-}
-
-export interface PlantaoResponse {
-  id: number;
-  hospitalNome: string;
-  medicoNome?: string;
-  inicio: string;
-  fim: string;
-  valor: number;
-  status: string;
+  cnpj?: string;
+  endereco?: string;
 }
 
 @Injectable({

@@ -1,42 +1,116 @@
 <div class="plantao-list-container">
-  <h2>Meus Plantões</h2>
+  <h2>{{ isMedico ? 'Meus Plantões' : 'Gerenciar Plantões' }}</h2>
 
-  <div *ngIf="plantoes$ | async as plantoes; else loadingOrEmpty">
-    <div *ngIf="plantoes.length > 0; else emptyList">
-      <table class="plantao-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Local</th>
-            <th>Início</th>
-            <th>Fim</th>
-            <th>Valor</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let plantao of plantoes">
-            <td>{{ plantao.id }}</td>
-            <td>{{ plantao.nomeHospital }}</td>
-            <td>{{ plantao.inicio | date : 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
-            <td>{{ plantao.status }}</td>
-            <td>
-              <button class="btn btn-details">Detalhes</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Carregando plantões...</p>
   </div>
 
-  <ng-template #loadingOrEmpty>
-    <p>Carregando plantões...</p>
-  </ng-template>
+  <div *ngIf="errorMessage && !isLoading" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
 
-  <ng-template #emptyList>
-    <p>Nenhum plantão encontrado.</p>
-  </ng-template>
+  <div *ngIf="!isLoading && !errorMessage">
+    <ng-container *ngIf="isMedico">
+      <div *ngIf="meusPlantoes.length > 0; else emptyListMedico">
+        <table class="plantao-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Local</th>
+              <th>Horário</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plantao of meusPlantoes">
+              <td>{{ plantao.id }}</td>
+              <td>{{ plantao.nomeHospital }}</td>
+              <td>
+                {{ plantao.inicio | date : 'dd/MM/yyyy - HH:mm' }} ~
+                {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
+              <td>{{ plantao.status }}</td>
+              <td>
+                <button class="btn btn-sm btn-info">Detalhes</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #emptyListMedico><p>Nenhum plantão encontrado para você.</p></ng-template>
+    </ng-container>
+
+    <ng-container *ngIf="isAdminOrEscalista">
+      <div *ngIf="plantoesPaginados && plantoesPaginados.content.length > 0; else emptyListAdmin">
+        <table class="plantao-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Local</th>
+              <th>Especialidade</th>
+              <th>Horário</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plantao of plantoesPaginados.content">
+              <td>{{ plantao.id }}</td>
+              <td>{{ plantao.nomeHospital }}</td>
+              <td>{{ plantao.especialidade }}</td>
+              <td>
+                {{ plantao.inicio | date : 'dd/MM/yyyy - HH:mm' }} ~
+                {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
+              <td>{{ plantao.status }}</td>
+              <td class="action-buttons">
+                <button class="btn btn-sm btn-details me-1">Ver Detalhes</button>
+
+                <button
+                  class="btn btn-icon btn-primary me-1"
+                  (click)="editarPlantao(plantao.id)"
+                  title="Editar Plantão"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+
+                <button
+                  class="btn btn-icon btn-danger"
+                  (click)="excluirPlantao(plantao.id)"
+                  title="Excluir Plantão"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="paginacao" *ngIf="plantoesPaginados.totalPages > 1">
+          <button
+            (click)="paginaAnterior()"
+            [disabled]="plantoesPaginados.first"
+            class="btn btn-secondary btn-sm"
+          >
+            Anterior
+          </button>
+          <span
+            >Página {{ plantoesPaginados.number + 1 }} de {{ plantoesPaginados.totalPages }}</span
+          >
+          <button
+            (click)="proximaPagina()"
+            [disabled]="plantoesPaginados.last"
+            class="btn btn-secondary btn-sm"
+          >
+            Próxima
+          </button>
+        </div>
+      </div>
+      <ng-template #emptyListAdmin><p>Nenhum plantão disponível encontrado.</p></ng-template>
+    </ng-container>
+  </div>
 </div>

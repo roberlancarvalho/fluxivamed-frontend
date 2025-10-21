@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PlantaoService } from '../../../../core/services/plantao.service';
-import {
-  Hospital,
-  HospitalService,
-  PlantaoRequest,
-} from '../../../../core/services/hospital.service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { Hospital, HospitalService } from '../../../../core/services/hospital.service';
+import {
+  PlantaoRequest,
+  PlantaoResponse,
+  PlantaoService,
+} from '../../../../core/services/plantao.service';
 
 @Component({
   selector: 'app-criar-plantao',
@@ -41,7 +41,7 @@ export class CriarPlantaoComponent implements OnInit {
     this.plantaoForm = this.fb.group(
       {
         hospitalId: ['', Validators.required],
-        especialidade: ['', Validators.required], 
+        especialidade: ['', Validators.required],
         inicio: ['', Validators.required],
         fim: ['', Validators.required],
         valor: ['', [Validators.required, Validators.min(0.01)]],
@@ -91,21 +91,22 @@ export class CriarPlantaoComponent implements OnInit {
     const formValue = this.plantaoForm.value;
 
     const plantao: PlantaoRequest = {
-      hospitalId: formValue.hospitalId,
+      hospitalId: parseInt(formValue.hospitalId, 10),
+      especialidade: formValue.especialidade,
       inicio: new Date(formValue.inicio).toISOString(),
       fim: new Date(formValue.fim).toISOString(),
-      valor: formValue.valor,
+      valor: parseFloat(formValue.valor)
     };
 
     this.plantaoService.criarPlantao(plantao).subscribe({
-      next: (response) => {
+      next: (response: PlantaoResponse) => {
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
           detail: 'Plantão criado com sucesso!',
         });
         this.plantaoForm.reset();
-        this.router.navigate(['/dashboard/plantoes/buscar']);
+        this.router.navigate(['/dashboard/plantoes']);
       },
       error: (error) => {
         console.error('Erro ao criar plantão:', error);

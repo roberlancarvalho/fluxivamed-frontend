@@ -49,25 +49,15 @@ export class MedicoService {
     });
   }
 
-  /**
-   * Busca os períodos de disponibilidade salvos pelo próprio médico.
-   * Consumirá o endpoint: GET /api/v1/medicos/minha-disponibilidade
-   */
   getMinhaDisponibilidade(): Observable<PeriodoDisponibilidadeMedico[]> {
     return this.http.get<PeriodoDisponibilidadeMedico[]>(`${this.apiUrl}/minha-disponibilidade`);
   }
 
-  /**
-   * Salva os novos períodos de disponibilidade do médico.
-   * Consumirá o endpoint: POST /api/v1/medicos/minha-disponibilidade
-   */
   salvarMinhaDisponibilidade(periodos: PeriodoDisponibilidadeMedico[]): Observable<void> {
-    const request: DefinirDisponibilidadeRequest = { periodos: periodos };
-
+    const periodosParaEnviar = periodos.map((p) => ({ inicio: p.inicio, fim: p.fim }));
+    const request: DefinirDisponibilidadeRequest = { periodos: periodosParaEnviar };
     const urlCompleta = `${this.apiUrl}/minha-disponibilidade`;
-
     console.log('Enviando POST para:', urlCompleta, 'com payload:', request);
-
     return this.http.post<void>(urlCompleta, request);
   }
 

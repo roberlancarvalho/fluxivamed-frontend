@@ -2,14 +2,34 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PlantaoRequest, PlantaoResponse } from './hospital.service';
+
+export interface PlantaoRequest {
+  hospitalId: number;
+  especialidade: string;
+  inicio: string;
+  fim: string;
+  valor: number;
+}
+
+export interface PlantaoResponse {
+  id: number;
+  hospitalId?: number;
+  nomeHospital?: string;
+  medicoId?: number | null;
+  nomeMedico?: string | null;
+  especialidade: string;
+  inicio: string;
+  fim: string;
+  valor: number;
+  status: string;
+}
 
 export interface Plantao {
   id: number;
-  hospitalId: number;
-  nomeHospital: string;
-  medicoId: number | null;
-  nomeMedico: string | null;
+  hospitalId?: number;
+  nomeHospital?: string;
+  medicoId?: number | null;
+  nomeMedico?: string | null;
   especialidade: string;
   inicio: string;
   fim: string;
@@ -39,15 +59,10 @@ export class PlantaoService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Obtém a lista de todos os plantões ou plantões do médico logado.
-   */
-  getPlantoes(): Observable<Plantao[]> {
+  getMeusPlantoes(): Observable<Plantao[]> {
     return this.http.get<Plantao[]>(`${this.apiUrl}/meus-plantoes`);
   }
-  /**
-   * Obtém um plantão específico pelo ID.
-   */
+
   getPlantaoById(id: string): Observable<Plantao> {
     return this.http.get<Plantao>(`${this.apiUrl}/${id}`);
   }
@@ -55,24 +70,17 @@ export class PlantaoService {
   buscarDisponiveis(filtros: any, page: number, size: number): Observable<Page<Plantao>> {
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
-    if (filtros.hospitalId) {
+    if (filtros?.hospitalId) {
       params = params.append('hospitalId', filtros.hospitalId);
     }
-    if (filtros.data) {
+    if (filtros?.data) {
       params = params.append('data', filtros.data);
     }
 
     return this.http.get<Page<Plantao>>(`${this.apiUrl}/disponiveis`, { params });
   }
 
-  /**
-   * NOVO MÉTODO: Envia a candidatura de um médico para um plantão específico.
-   * @param plantaoId O ID do plantão ao qual o médico está se candidatando.
-   * @returns Um Observable com o plantão atualizado.
-   */
   candidatarSe(plantaoId: string): Observable<Plantao> {
-    // O AuthInterceptor adicionará o token JWT automaticamente.
-    // O corpo da requisição é vazio, conforme o endpoint do backend.
     return this.http.post<Plantao>(`${this.apiUrl}/${plantaoId}/candidatar-se`, {});
   }
 

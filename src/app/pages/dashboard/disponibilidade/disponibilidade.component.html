@@ -1,0 +1,68 @@
+<div class="disponibilidade-container">
+  <h2>Minha Disponibilidade</h2>
+
+  <div class="card">
+    <h3>Adicionar Períodos de Dinponibilidade</h3>
+    <form [formGroup]="disponibilidadeForm" (ngSubmit)="salvarDisponibilidade()">
+      <div formArrayName="periodos">
+        <div
+          *ngFor="let periodo of periodos.controls; let i = index"
+          [formGroupName]="i"
+          class="periodo-form-group"
+        >
+          <div class="form-row">
+            <div class="form-field">
+              <label>Data de Início</label>
+              <input type="date" formControlName="dataInicio" />
+            </div>
+            <div class="form-field">
+              <label>Data de Fim</label>
+              <input type="date" formControlName="dataFim" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Hora de Início</label>
+              <input type="time" formControlName="horaInicio" />
+            </div>
+            <div class="form-field">
+              <label>Hora de Fim</label>
+              <input type="time" formControlName="horaFim" />
+            </div>
+          </div>
+          <button
+            type="button"
+            (click)="removerPeriodo(i)"
+            class="btn btn-danger btn-remove"
+            *ngIf="periodos.length > 1"
+          >
+            Remover
+          </button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" (click)="adicionarPeriodo()" class="btn btn-secondary">
+          Adicionar Outro Período
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="disponibilidadeForm.invalid">
+          Salvar Disponibilidade
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Meus Períodos Salvos</h3>
+    <div *ngIf="disponibilidadesAtuais$ | async as disponibilidades; else loading">
+      <ul *ngIf="disponibilidades.length > 0; else noResults" class="disponibilidade-list">
+        <li *ngFor="let periodo of disponibilidades">
+          De <strong>{{ periodo.inicio | date : 'dd/MM/yyyy HH:mm' }}</strong> até
+          <strong>{{ periodo.fim | date : 'dd/MM/yyyy HH:mm' }}</strong>
+        </li>
+      </ul>
+    </div>
+    <ng-template #loading><p>Carregando disponibilidades...</p></ng-template>
+    <ng-template #noResults><p>Nenhum período de disponibilidade salvo.</p></ng-template>
+  </div>
+</div>

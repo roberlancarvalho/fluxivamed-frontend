@@ -3,9 +3,11 @@ import { AuthComponent } from './auth/auth/auth.component';
 import { LoginComponent } from './auth/login/login.component';
 import { authGuard } from './core/guards/auth-guard';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { DisponibilidadeComponent } from './pages/dashboard/disponibilidade/disponibilidade.component';
 import { OverviewComponent } from './pages/dashboard/overview/overview.component';
 import { BuscarPlantoesComponent } from './pages/dashboard/plantoes/buscar-plantoes/buscar-plantoes.component';
 import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list/plantao-list.component';
+import { CriarPlantaoComponent } from './pages/dashboard/plantoes/criar-plantao/criar-plantao.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
@@ -31,6 +33,18 @@ export const routes: Routes = [
         path: 'buscar-plantoes',
         component: BuscarPlantoesComponent,
         title: 'FluxivaMed - Buscar Plantões',
+      },
+      {
+        path: 'disponibilidade',
+        component: DisponibilidadeComponent,
+        title: 'FluxivaMed - Minha Disponibilidade',
+      },
+
+      {
+        path: 'plantoes/criar',
+        component: CriarPlantaoComponent,
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'GESTOR_HOSPITAL', 'PLANTONISTA'] },
       },
     ],
   },

@@ -27,6 +27,7 @@
           <tr>
             <th>ID</th>
             <th>Local</th>
+            <th>Especialidade</th>
             <th>Horário</th>
             <th>Valor</th>
             <th>Ações</th>
@@ -37,6 +38,7 @@
           <tr *ngFor="let plantao of pagina.content">
             <td>{{ plantao.id }}</td>
             <td>{{ plantao.nomeHospital }}</td>
+            <td>{{ plantao.especialidade }}</td>
             <td>
               {{ plantao.inicio | date : 'dd/MM/yyyy - HH:mm' }} ~
               {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
@@ -44,7 +46,13 @@
             <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
             <td>{{ plantao.status }}</td>
             <td>
-              <button class="btn btn-success">Candidatar-se</button>
+              <button
+                class="btn btn-success"
+                (click)="onCandidatarSe(plantao.id.toString())"
+                [disabled]="plantao.status !== 'DISPONIVEL'"
+              >
+                Candidatar-se
+              </button>
             </td>
           </tr>
         </tbody>

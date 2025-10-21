@@ -1,18 +1,20 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PlantaoRequest, PlantaoResponse } from './hospital.service';
 
 export interface Plantao {
-  id: string;
+  id: number;
+  hospitalId: number;
+  nomeHospital: string;
+  medicoId: number | null;
+  nomeMedico: string | null;
   especialidade: string;
-  data: string;
   inicio: string;
   fim: string;
-  nomeHospital: string;
   valor: number;
   status: string;
-  medicoResponsavel?: string;
 }
 
 export interface Page<T> {
@@ -51,17 +53,30 @@ export class PlantaoService {
   }
 
   buscarDisponiveis(filtros: any, page: number, size: number): Observable<Page<Plantao>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
     if (filtros.hospitalId) {
       params = params.append('hospitalId', filtros.hospitalId);
     }
     if (filtros.data) {
-      params = params.append('data', filtros.data); // Assumindo formato YYYY-MM-DD
+      params = params.append('data', filtros.data);
     }
 
     return this.http.get<Page<Plantao>>(`${this.apiUrl}/disponiveis`, { params });
+  }
+
+  /**
+   * NOVO MÉTODO: Envia a candidatura de um médico para um plantão específico.
+   * @param plantaoId O ID do plantão ao qual o médico está se candidatando.
+   * @returns Um Observable com o plantão atualizado.
+   */
+  candidatarSe(plantaoId: string): Observable<Plantao> {
+    // O AuthInterceptor adicionará o token JWT automaticamente.
+    // O corpo da requisição é vazio, conforme o endpoint do backend.
+    return this.http.post<Plantao>(`${this.apiUrl}/${plantaoId}/candidatar-se`, {});
+  }
+
+  criarPlantao(plantao: PlantaoRequest): Observable<PlantaoResponse> {
+    return this.http.post<PlantaoResponse>(this.apiUrl, plantao);
   }
 }

@@ -39,4 +39,31 @@ export class BuscarPlantoesComponent implements OnInit {
   onFiltroSubmit(): void {
     this.buscar();
   }
+
+  /**
+   * MÉTODO: Chamado quando o botão 'Candidatar-se' é clicado.
+   * @param plantaoId O ID do plantão.
+   */
+  onCandidatarSe(plantaoId: string): void {
+    if (!plantaoId) {
+      console.error('ID do plantão não fornecido.');
+      return;
+    }
+
+    this.plantaoService.candidatarSe(plantaoId).subscribe({
+      next: (plantaoAtualizado) => {
+        alert(
+          `Candidatura para o plantão de ${plantaoAtualizado.especialidade} enviada com sucesso!`
+        );
+        this.buscar();
+      },
+      error: (err) => {
+        console.error('Erro ao se candidatar ao plantão:', err);
+        const errorMessage =
+          err.error?.message ||
+          'Não foi possível enviar a candidatura. Tente novamente mais tarde.';
+        alert(`Erro: ${errorMessage}`);
+      },
+    });
+  }
 }

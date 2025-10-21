@@ -19,6 +19,9 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
+  hasRole(arg0: string): any {
+    throw new Error('Method not implemented.');
+  }
   isCollapsed: boolean = false;
   activeDropdown: string | null = null;
 

@@ -1,0 +1,97 @@
+<div class="criar-plantao-container">
+  <p-toast></p-toast>
+  <h2>Criar Novo Plantão</h2>
+
+  <form [formGroup]="plantaoForm" (ngSubmit)="onSubmit()" class="plantao-form">
+    <div class="form-group">
+      <label for="hospital">Hospital:</label>
+      <select id="hospital" formControlName="hospitalId" class="form-control">
+        <option value="">Selecione um hospital</option>
+        <option *ngFor="let hospital of hospitais" [value]="hospital.id">
+          {{ hospital.nome }}
+        </option>
+      </select>
+      <div
+        *ngIf="
+          plantaoForm.get('hospitalId')?.invalid &&
+          (plantaoForm.get('hospitalId')?.dirty || plantaoForm.get('hospitalId')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="plantaoForm.get('hospitalId')?.errors?.['required']"
+          >Hospital é obrigatório.</span
+        >
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="especialidade">Especialidade:</label>
+      <input
+        type="text"
+        id="especialidade"
+        formControlName="especialidade"
+        placeholder="Ex: Cardiologia, Pediatria"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="inicio">Início do Plantão:</label>
+      <input type="datetime-local" id="inicio" formControlName="inicio" class="form-control" />
+      <div
+        *ngIf="
+          plantaoForm.get('inicio')?.invalid &&
+          (plantaoForm.get('inicio')?.dirty || plantaoForm.get('inicio')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="plantaoForm.get('inicio')?.errors?.['required']"
+          >Data/hora de início é obrigatória.</span
+        >
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="fim">Fim do Plantão:</label>
+      <input type="datetime-local" id="fim" formControlName="fim" class="form-control" />
+      <div
+        *ngIf="
+          plantaoForm.get('fim')?.invalid &&
+          (plantaoForm.get('fim')?.dirty || plantaoForm.get('fim')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="plantaoForm.get('fim')?.errors?.['required']"
+          >Data/hora de fim é obrigatória.</span
+        >
+      </div>
+      <div
+        *ngIf="plantaoForm.errors?.['dateRangeInvalid'] && (plantaoForm.get('fim')?.dirty || plantaoForm.get('fim')?.touched)"
+        class="error-message"
+      >
+        <span>A data de fim deve ser posterior à data de início.</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="valor">Valor (R$):</label>
+      <input type="number" id="valor" formControlName="valor" step="0.01" class="form-control" />
+      <div
+        *ngIf="
+          plantaoForm.get('valor')?.invalid &&
+          (plantaoForm.get('valor')?.dirty || plantaoForm.get('valor')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="plantaoForm.get('valor')?.errors?.['required']">Valor é obrigatório.</span>
+        <span *ngIf="plantaoForm.get('valor')?.errors?.['min']"
+          >Valor deve ser maior que zero.</span
+        >
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="plantaoForm.invalid || isLoading" class="btn btn-primary">
+      <span *ngIf="!isLoading">Criar Plantão</span>
+      <span *ngIf="isLoading">Criando...</span>
+    </button>
+  </form>
+</div>

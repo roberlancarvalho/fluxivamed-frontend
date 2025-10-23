@@ -31,7 +31,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: OverviewComponent, title: 'FluxivaMed - Visão Geral' },
       {
-        path: 'plantoes/meus-plantoes',
+        path: 'plantoes/listar-plantoes',
         component: PlantaoListComponent,
         title: 'FluxivaMed - Meus Plantões',
         canActivate: [authGuard],

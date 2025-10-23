@@ -158,7 +158,7 @@
             *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')"
           >
             <li>
-              <a routerLink="/dashboard/plantoes/listar" routerLinkActive="active">
+              <a routerLink="/dashboard/plantoes/listar-plantoes" routerLinkActive="active">
                 <i class="fas fa-list"></i>
                 <span>Listar Plantões</span>
               </a>
@@ -173,7 +173,7 @@
 
           <ng-container *ngIf="hasRole('MEDICO')">
             <li>
-              <a routerLink="/dashboard/plantoes/meus-plantoes" routerLinkActive="active">
+              <a routerLink="/dashboard/plantoes/listar-plantoes" routerLinkActive="active">
                 <i class="fas fa-user-clock"></i> <span>Meus Plantões</span>
               </a>
             </li>

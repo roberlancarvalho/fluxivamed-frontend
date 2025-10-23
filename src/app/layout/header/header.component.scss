@@ -1,13 +1,12 @@
-/* src/app/layout/header/header.component.scss */
 .header-container {
-  background-color: #ffffff; /* Fundo branco para o header */
+  background-color: #ffffff;
   padding: 15px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: space-between; /* Alinha o título à esquerda e o usuário à direita */
+  justify-content: space-between;
   align-items: center;
-  height: 60px; /* Altura fixa para o header */
-  border-bottom: 1px solid #eee; /* Linha sutil na parte inferior */
+  height: 60px;
+  border-bottom: 1px solid #eee;
 }
 
 .header-content {

@@ -4,9 +4,11 @@ import { LoginComponent } from './auth/login/login.component';
 import { authGuard } from './core/guards/auth-guard';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DisponibilidadeComponent } from './pages/dashboard/disponibilidade/disponibilidade.component';
+import { CriarMedicoComponent } from './pages/dashboard/medicos/criar-medico.component';
 import { OverviewComponent } from './pages/dashboard/overview/overview.component';
 import { BuscarPlantoesComponent } from './pages/dashboard/plantoes/buscar-plantoes/buscar-plantoes.component';
 import { CriarPlantaoComponent } from './pages/dashboard/plantoes/criar-plantao/criar-plantao.component';
+import { PlantaoDetalhesComponent } from './pages/dashboard/plantoes/plantao-detalhes/plantao-detalhes.component';
 import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list/plantao-list.component';
 
 export const routes: Routes = [
@@ -28,25 +30,62 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: OverviewComponent, title: 'FluxivaMed - Visão Geral' },
-      { path: 'plantoes', component: PlantaoListComponent, title: 'FluxivaMed - Meus Plantões' },
       {
-        path: 'buscar-plantoes',
+        path: 'plantoes',
+        component: PlantaoListComponent,
+        title: 'FluxivaMed - Meus Plantões',
+        canActivate: [authGuard],
+        data: { roles: ['MEDICO', 'ADMIN', 'HOSPITAL_ADMIN', 'ESCALISTA'] },
+      },
+      {
+        path: 'disponiveis',
         component: BuscarPlantoesComponent,
         title: 'FluxivaMed - Buscar Plantões',
+        canActivate: [authGuard],
+        data: { roles: ['MEDICO'] },
       },
       {
         path: 'disponibilidade',
         component: DisponibilidadeComponent,
         title: 'FluxivaMed - Minha Disponibilidade',
+        canActivate: [authGuard],
+        data: { roles: ['MEDICO'] },
       },
       {
         path: 'plantoes/criar',
         component: CriarPlantaoComponent,
         title: 'FluxivaMed - Criar Plantão',
+        canActivate: [authGuard],
         data: { roles: ['ADMIN', 'HOSPITAL_ADMIN', 'ESCALISTA'] },
       },
-      // Adicione a rota de Perfil aqui se necessário
-      // { path: 'perfil', component: PerfilComponent, title: 'FluxivaMed - Meu Perfil' },
+      {
+        path: 'plantoes/editar/:id',
+        component: CriarPlantaoComponent,
+        title: 'FluxivaMed - Editar Plantão',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN', 'ESCALISTA'] },
+      },
+      {
+        path: 'plantoes/:id',
+        component: PlantaoDetalhesComponent,
+        title: 'FluxivaMed - Detalhes do Plantão',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN', 'ESCALISTA', 'MEDICO'] },
+      },
+      {
+        path: 'medicos/criar',
+        component: CriarMedicoComponent,
+        title: 'FluxivaMed - Adicionar Médico',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN'] },
+      },
+      {
+        path: 'medicos/editar/:id',
+        component: CriarMedicoComponent,
+        title: 'FluxivaMed - Editar Médico',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN'] },
+      },
     ],
   },
   { path: '**', redirectTo: '/auth/login' },

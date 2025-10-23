@@ -181,6 +181,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
       width: auto;
       font-size: 1.2rem;
       margin-right: 0.5rem;
+      align-items: center;
       transition: margin-right 0.3s ease;
     }
 
@@ -233,7 +234,10 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     list-style: none;
     padding: 0;
     margin: 0;
-    background-color: $submenu-bg;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease-out;
+    background-color: rgba(0, 0, 0, 0.2);
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.3s ease-out;
@@ -291,4 +295,25 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
       color: $active-item-color;
     }
   }
+}
+
+.submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-out;
+}
+
+.badge {
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-left: 8px;
+  vertical-align: middle;
 }

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 interface AuthResponse {
@@ -9,39 +9,59 @@ interface AuthResponse {
   expiresIn?: number;
 }
 
+interface JwtPayload {
+  sub: string;
+  scope: string[];
+  exp: number;
+  iat: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private userRoles: string[] = [];
+  private currentUserEmail: string | null = null;
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
   constructor(private http: HttpClient) {
-    this.loadUserRoles();
+    this.loadAuthDataFromToken();
+  }
+
+  public getCurrentUserEmail(): string | null {
+    return this.currentUserEmail;
+  }
+
+  public getUserRoles(): string[] {
+    return [...this.userRoles];
   }
 
   private hasToken(): boolean {
     return !!localStorage.getItem('accessToken');
   }
 
-  private decodeTokenAndSetRoles(token: string): void {
+  private decodeTokenAndSetData(token: string): void {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload: JwtPayload = JSON.parse(atob(token.split('.')[1]));
       this.userRoles = payload.scope || [];
+      this.currentUserEmail = payload.sub || null;
       console.log('Roles do usuário carregadas:', this.userRoles);
+      console.log('Email do usuário carregado:', this.currentUserEmail);
     } catch (e) {
       console.error('Erro ao decodificar o token JWT:', e);
       this.userRoles = [];
+      this.currentUserEmail = null;
     }
   }
 
-  private loadUserRoles(): void {
+  private loadAuthDataFromToken(): void {
     const token = this.getAccessToken();
     if (token) {
-      this.decodeTokenAndSetRoles(token);
+      this.decodeTokenAndSetData(token);
     } else {
       this.userRoles = [];
+      this.currentUserEmail = null;
     }
     this.loggedIn.next(this.hasToken());
   }
@@ -67,7 +87,7 @@ export class AuthService {
       tap((response) => {
         if (response && response.accessToken) {
           localStorage.setItem('accessToken', response.accessToken);
-          this.decodeTokenAndSetRoles(response.accessToken);
+          this.decodeTokenAndSetData(response.accessToken);
           this.loggedIn.next(true);
         } else {
           this.logout();
@@ -79,8 +99,9 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('accessToken');
     this.userRoles = [];
+    this.currentUserEmail = null;
     this.loggedIn.next(false);
-    console.log('Logout efetuado. Token e roles removidos.');
+    console.log('Logout efetuado. Token, roles e email removidos.');
   }
 
   getAccessToken(): string | null {

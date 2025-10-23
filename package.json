@@ -22,6 +22,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/cdk": "^20.2.9",
     "@angular/common": "^20.2.0",
     "@angular/compiler": "^20.2.0",
     "@angular/core": "^20.2.0",
@@ -29,6 +30,7 @@
     "@angular/material": "^20.2.9",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@fortawesome/fontawesome-free": "^7.1.0",
     "@primeuix/themes": "^1.2.5",
     "primeicons": "^7.0.0",
     "primeng": "^20.2.0",

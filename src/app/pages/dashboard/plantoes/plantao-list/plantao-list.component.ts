@@ -1,110 +1,222 @@
-// src/app/pages/dashboard/plantoes/plantao-list/plantao-list.component.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { PlantaoService, Plantao, Page } from '../../../../core/services/plantao.service';
+import { CommonModule, DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterLink } from '@angular/router';
+import { Observable, Subscription, of } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
-import { Observable, Subscription } from 'rxjs'; // Importar Subscription
-import { HttpErrorResponse } from '@angular/common/http'; // Para erro
+import {
+  PageResponse,
+  PlantaoResponse,
+  PlantaoService,
+} from '../../../../core/services/plantao.service';
 
 @Component({
   selector: 'app-plantao-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatTooltipModule,
+    MatCardModule,
+  ],
   templateUrl: './plantao-list.component.html',
   styleUrl: './plantao-list.component.scss',
+  providers: [DatePipe],
 })
-export class PlantaoListComponent implements OnInit {
-editarPlantao(arg0: number) {
-throw new Error('Method not implemented.');
-}
-excluirPlantao(arg0: number) {
-throw new Error('Method not implemented.');
-}
-  // Propriedades separadas para os dados
-  meusPlantoes: Plantao[] = [];
-  plantoesPaginados: Page<Plantao> | null = null;
-  isLoading: boolean = true; // Flag para indicar carregamento
-  errorMessage: string | null = null; // Para mensagens de erro
-
-  // Flags de role
+export class PlantaoListComponent implements OnInit, OnDestroy {
+  meusPlantoes: PlantaoResponse[] = [];
+  plantoesPaginados: PageResponse<PlantaoResponse> | null = null;
+  isLoading: boolean = true;
+  errorMessage: string | null = null;
   isMedico: boolean = false;
   isAdminOrEscalista: boolean = false;
 
-  private plantoesSubscription: Subscription | null = null; // Para gerenciar a inscrição
+  displayedColumnsMedico: string[] = [
+    'hospitalNome',
+    'especialidade',
+    'inicio',
+    'fim',
+    'valor',
+    'status',
+    'acoes',
+  ];
+
+  displayedColumnsAdmin: string[] = [
+    'id',
+    'hospitalNome',
+    'especialidade',
+    'inicio',
+    'fim',
+    'valor',
+    'status',
+    'medicoNome',
+    'acoes',
+  ];
+
+  private plantoesSubscription: Subscription | null = null;
 
   constructor(
     private plantaoService: PlantaoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router,
+    private _snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.isMedico = this.authService.hasRole('MEDICO');
-    this.isAdminOrEscalista = this.authService.hasRole('ADMIN') || this.authService.hasRole('HOSPITAL_ADMIN') || this.authService.hasRole('ESCALISTA');
+    this.isAdminOrEscalista =
+      this.authService.hasRole('ADMIN') ||
+      this.authService.hasRole('HOSPITAL_ADMIN') ||
+      this.authService.hasRole('ESCALISTA');
     this.carregarPlantoes();
   }
 
   ngOnDestroy(): void {
-    // Cancela a inscrição ao destruir o componente para evitar memory leaks
     this.plantoesSubscription?.unsubscribe();
   }
 
-  carregarPlantoes(): void {
+  carregarPlantoes(page: number = 0, size: number = 10): void {
     this.isLoading = true;
     this.errorMessage = null;
-    this.meusPlantoes = []; // Limpa dados antigos
-    this.plantoesPaginados = null; // Limpa dados antigos
+    this.meusPlantoes = [];
+    this.plantoesPaginados = null;
 
-    let observableSource: Observable<Plantao[] | Page<Plantao>>;
+    let observableSource: Observable<PlantaoResponse[] | PageResponse<PlantaoResponse>>;
 
     if (this.isMedico) {
       observableSource = this.plantaoService.getMeusPlantoes();
     } else if (this.isAdminOrEscalista) {
-      observableSource = this.plantaoService.buscarDisponiveis({}, 0, 10); // Busca inicial para admins
+      observableSource = this.plantaoService.buscarPlantoesDisponiveis({}, page, size);
     } else {
-      this.errorMessage = "Usuário sem permissão para visualizar plantões.";
+      this.errorMessage = 'Usuário sem permissão para visualizar plantões.';
       this.isLoading = false;
-      return; // Sai se não tiver role
+      return;
     }
 
-    this.plantoesSubscription = observableSource.subscribe({
-      next: (dados) => {
-        if (this.isPage(dados)) {
-          this.plantoesPaginados = dados;
-          console.log('Plantoes Paginados Carregados:', this.plantoesPaginados);
-        } else {
-          this.meusPlantoes = dados;
-          console.log('Meus Plantoes Carregados:', this.meusPlantoes);
+    this.plantoesSubscription = observableSource
+      .pipe(
+        finalize(() => (this.isLoading = false)),
+        catchError((err: HttpErrorResponse) => {
+          console.error('Erro ao carregar plantões:', err);
+          this.errorMessage = `Erro ${err.status}: Não foi possível carregar os plantões.`;
+          if (err.status === 403) {
+            this.errorMessage += ' Acesso negado.';
+          }
+          this._snackBar.open(this.errorMessage, 'Fechar', {
+            duration: 5000,
+            panelClass: ['snackbar-error'],
+          });
+          return of(this.isMedico ? [] : null);
+        })
+      )
+      .subscribe((dados) => {
+
+        console.log('DADOS DA API:', dados);
+
+        if (dados) {
+          if (this.isPage(dados)) {
+            this.plantoesPaginados = dados;
+          } else {
+            this.meusPlantoes = dados as PlantaoResponse[];
+          }
         }
-        this.isLoading = false;
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error("Erro ao carregar plantões:", err);
-        this.errorMessage = `Erro ${err.status}: Não foi possível carregar os plantões.`;
-        if (err.status === 403) {
-            this.errorMessage += " Acesso negado.";
-        }
-        this.isLoading = false;
-      }
-    });
+      });
   }
 
-  // Helper para verificar se o dado é do tipo Page (type guard)
-  isPage(data: Page<Plantao> | Plantao[]): data is Page<Plantao> {
-    return (data as Page<Plantao>)?.content !== undefined;
-  }
-
-  // Métodos para paginação (a serem implementados no futuro)
-  proximaPagina(): void {
-    if (this.plantoesPaginados && !this.plantoesPaginados.last) {
-        // this.carregarPlantoes(this.plantoesPaginados.number + 1); // Exemplo
-        console.log('Ir para próxima página');
+  editarPlantao(id: number | undefined): void {
+    if (id) {
+      this.router.navigate(['/dashboard/plantoes/editar', id]);
+    } else {
+      console.error('ID do plantão inválido para edição.');
+      this._snackBar.open('ID do plantão inválido para edição.', 'Fechar', { duration: 3000 });
     }
   }
 
-  paginaAnterior(): void {
-     if (this.plantoesPaginados && !this.plantoesPaginados.first) {
-        // this.carregarPlantoes(this.plantoesPaginados.number - 1); // Exemplo
-        console.log('Ir para página anterior');
+  verDetalhesPlantao(id: number | undefined): void {
+    if (id) {
+      this.router.navigate(['/dashboard/plantoes', id]);
+    } else {
+      console.error('ID do plantão inválido para ver detalhes.');
+      this._snackBar.open('ID do plantão inválido para ver detalhes.', 'Fechar', {
+        duration: 3000,
+      });
+    }
+  }
+
+  excluirPlantao(id: number | undefined): void {
+    if (!id) {
+      console.error('ID do plantão inválido para exclusão');
+      this._snackBar.open('ID do plantão inválido para exclusão.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    if (confirm(`Tem certeza que deseja excluir o plantão ID ${id}?`)) {
+      this.isLoading = true;
+      this.plantaoService
+        .excluirPlantao(id)
+        .pipe(finalize(() => (this.isLoading = false)))
+        .subscribe({
+          next: () => {
+            this._snackBar.open('Plantão excluído com sucesso!', 'Fechar', {
+              duration: 3000,
+              panelClass: ['snackbar-success'],
+            });
+            this.carregarPlantoes();
+          },
+          error: (err: HttpErrorResponse) => {
+            console.error('Erro ao excluir plantão:', err);
+            const message = err.error?.message || 'Erro ao excluir plantão.';
+            this._snackBar.open(message, 'Fechar', {
+              duration: 5000,
+              panelClass: ['snackbar-error'],
+            });
+          },
+        });
+    }
+  }
+
+  isPage(
+    data: PageResponse<PlantaoResponse> | PlantaoResponse[]
+  ): data is PageResponse<PlantaoResponse> {
+    return (data as PageResponse<PlantaoResponse>)?.content !== undefined;
+  }
+
+  onPageChange(event: any): void {
+    if (this.isAdminOrEscalista) {
+      this.carregarPlantoes(event.pageIndex, event.pageSize);
+    }
+  }
+
+  getChipColor(status: string): 'primary' | 'accent' | 'warn' | '' {
+    switch (status) {
+      case 'DISPONIVEL':
+        return 'primary';
+      case 'AGUARDANDO_APROVACAO':
+        return 'accent';
+      case 'PREENCHIDO':
+        return 'warn';
+      case 'REALIZADO':
+        return '';
+      case 'CANCELADO':
+        return '';
+      default:
+        return '';
     }
   }
 }

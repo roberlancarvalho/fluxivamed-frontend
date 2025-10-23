@@ -10,7 +10,7 @@ $label-color: #343a40;
 $white: #fff;
 $danger-color: #dc3545;
 
-.criar-plantao-container {
+.criar-medico-container {
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
@@ -25,7 +25,8 @@ $danger-color: #dc3545;
     font-weight: 600;
   }
 
-  .plantao-form {
+  .medico-form {
+    // Mudado de .plantao-form
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -59,13 +60,6 @@ $danger-color: #dc3545;
         border-color: $primary-color;
         box-shadow: 0 0 0 2px rgba($primary-color, 0.25);
       }
-    }
-
-    input[type='datetime-local'] {
-      position: relative;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
     }
   }
 

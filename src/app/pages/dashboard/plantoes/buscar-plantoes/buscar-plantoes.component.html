@@ -1,74 +1,129 @@
-<div class="buscar-plantoes-container">
-  <h2>Buscar Plantões Disponíveis</h2>
+<mat-card class="buscar-plantoes-container">
+  <mat-card-header>
+    <mat-card-title>Buscar Plantões Disponíveis</mat-card-title>
+  </mat-card-header>
 
-  <form [formGroup]="filtroForm" (ngSubmit)="onFiltroSubmit()" class="filtro-form">
-    <div class="form-group">
-      <label for="hospitalId">Local</label>
-      <select id="hospitalId" formControlName="hospitalId">
-        <option value="">Todos</option>
-        <option *ngFor="let hospital of hospitais" [value]="hospital.id">
-          {{ hospital.nome }}
-        </option>
-      </select>
+  <mat-card-content>
+    <form [formGroup]="filtroForm" (ngSubmit)="onFiltroSubmit()" class="filtro-form">
+      <mat-form-field appearance="outline" class="filtro-item">
+        <mat-label>Hospital</mat-label>
+        <mat-select formControlName="hospitalId">
+          <mat-option value="">Todos os Hospitais</mat-option>
+          <mat-option *ngFor="let hospital of hospitais" [value]="hospital.id">
+            {{ hospital.nome }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filtro-item">
+        <mat-label>Data</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="data" placeholder="dd/mm/aaaa" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filtro-item">
+        <mat-label>Especialidade</mat-label>
+        <input matInput formControlName="especialidade" placeholder="Ex: Clínico Geral" />
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="isLoading"
+        class="filtro-botao"
+      >
+        <mat-icon>search</mat-icon>
+        Buscar
+      </button>
+    </form>
+
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+      <p>Carregando plantões...</p>
     </div>
 
-    <div class="form-group">
-      <label for="data">Data</label>
-      <input type="date" id="data" formControlName="data" />
-    </div>
+    <div *ngIf="!isLoading && plantoesPaginados as pagina" class="resultados-container">
+      <div
+        *ngIf="pagina.content && pagina.content.length > 0; else noResults"
+        class="table-responsive-wrapper"
+      >
+        <table mat-table [dataSource]="pagina.content" class="mat-elevation-z8 plantao-table">
+          <ng-container matColumnDef="hospitalNome">
+            <th mat-header-cell *matHeaderCellDef>Hospital</th>
+            <td mat-cell *matCellDef="let plantao">{{ plantao.nomeHospital }}</td>
+          </ng-container>
 
-    <button type="submit" class="btn btn-primary">Buscar</button>
-  </form>
+          <ng-container matColumnDef="especialidade">
+            <th mat-header-cell *matHeaderCellDef>Especialidade</th>
+            <td mat-cell *matCellDef="let plantao">{{ plantao.especialidade }}</td>
+          </ng-container>
 
-  <div *ngIf="plantoesPaginados$ | async as pagina; else loading">
-    <div *ngIf="pagina.content && pagina.content.length > 0; else noResults">
-      <table class="plantao-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Local</th>
-            <th>Especialidade</th>
-            <th>Horário</th>
-            <th>Valor</th>
-            <th>Ações</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let plantao of pagina.content">
-            <td>{{ plantao.id }}</td>
-            <td>{{ plantao.nomeHospital }}</td>
-            <td>{{ plantao.especialidade }}</td>
-            <td>
-              {{ plantao.inicio | date : 'dd/MM/yyyy - HH:mm' }} ~
+          <ng-container matColumnDef="inicio">
+            <th mat-header-cell *matHeaderCellDef>Início</th>
+            <td mat-cell *matCellDef="let plantao">
+              {{ plantao.inicio | date : 'dd/MM/yyyy HH:mm' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="fim">
+            <th mat-header-cell *matHeaderCellDef>Fim</th>
+            <td mat-cell *matCellDef="let plantao">
               {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
             </td>
-            <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
-            <td>{{ plantao.status }}</td>
-            <td>
+          </ng-container>
+
+          <ng-container matColumnDef="valor">
+            <th mat-header-cell *matHeaderCellDef>Valor</th>
+            <td mat-cell *matCellDef="let plantao">{{ plantao.valor | currency : 'BRL' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let plantao">
+              <mat-chip-row [color]="getChipColor(plantao.status)" selected>
+                {{ plantao.status }}
+              </mat-chip-row>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acoes">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let plantao" class="coluna-acoes">
               <button
-                class="btn btn-success"
-                (click)="onCandidatarSe(plantao.id.toString())"
-                [disabled]="plantao.status !== 'DISPONIVEL'"
+                mat-flat-button
+                color="primary"
+                (click)="onCandidatarSe(plantao.id)"
+                [disabled]="isLoading"
               >
+                <mat-icon>how_to_reg</mat-icon>
                 Candidatar-se
               </button>
             </td>
-          </tr>
-        </tbody>
-      </table>
+          </ng-container>
 
-      <div class="paginacao">
-        <span>Página {{ pagina.number + 1 }} de {{ pagina.totalPages }}</span>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
       </div>
+
+      <mat-paginator
+        *ngIf="pagina.content && pagina.content.length > 0"
+        [length]="pagina.totalElements"
+        [pageSize]="pagina.size"
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="onPageChange($event)"
+        aria-label="Selecionar página"
+        class="mat-elevation-z8 custom-paginator"
+      >
+      </mat-paginator>
+
+      <ng-template #noResults>
+        <div class="no-results-message">
+          <p>Nenhum plantão encontrado com os filtros selecionados.</p>
+        </div>
+      </ng-template>
     </div>
-  </div>
-
-  <ng-template #loading>
-    <p>Carregando plantões disponíveis...</p>
-  </ng-template>
-
-  <ng-template #noResults>
-    <p>Nenhum plantão encontrado com os filtros selecionados.</p>
-  </ng-template>
-</div>
+  </mat-card-content>
+</mat-card>

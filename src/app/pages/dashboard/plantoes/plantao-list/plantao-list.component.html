@@ -1,116 +1,202 @@
-<div class="plantao-list-container">
-  <h2>{{ isMedico ? 'Meus Plantões' : 'Gerenciar Plantões' }}</h2>
+<mat-card class="plantao-list-container">
+  <mat-card-header>
+    <mat-card-title>{{ isMedico ? 'Meus Plantões' : 'Gerenciar Plantões' }}</mat-card-title>
+    <span class="header-spacer"></span>
+    <button
+      *ngIf="isAdminOrEscalista"
+      mat-flat-button
+      color="primary"
+      routerLink="/dashboard/plantoes/criar"
+    >
+      <mat-icon>add</mat-icon>
+      Criar Novo Plantão
+    </button>
+  </mat-card-header>
 
-  <div *ngIf="isLoading" class="loading-indicator">
-    <p>Carregando plantões...</p>
-  </div>
+  <mat-card-content>
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+      <p>Carregando plantões...</p>
+    </div>
 
-  <div *ngIf="errorMessage && !isLoading" class="error-message">
-    <p>{{ errorMessage }}</p>
-  </div>
+    <div *ngIf="!isLoading && errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
 
-  <div *ngIf="!isLoading && !errorMessage">
-    <ng-container *ngIf="isMedico">
-      <div *ngIf="meusPlantoes.length > 0; else emptyListMedico">
-        <table class="plantao-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Local</th>
-              <th>Horário</th>
-              <th>Valor</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let plantao of meusPlantoes">
-              <td>{{ plantao.id }}</td>
-              <td>{{ plantao.nomeHospital }}</td>
-              <td>
-                {{ plantao.inicio | date : 'dd/MM/yyyy - HH:mm' }} ~
+    <div *ngIf="!isLoading && !errorMessage && isMedico" class="table-section">
+      <h3>Meus Plantões</h3>
+      <div *ngIf="meusPlantoes.length > 0; else noPlantoesMedico">
+        <div class="table-responsive-wrapper">
+          <table mat-table [dataSource]="meusPlantoes" class="mat-elevation-z8 plantao-table">
+            <ng-container matColumnDef="hospitalNome">
+              <th mat-header-cell *matHeaderCellDef>Hospital</th>
+              <td mat-cell *matCellDef="let plantao">{{ plantao.nomeHospital }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="especialidade">
+              <th mat-header-cell *matHeaderCellDef>Especialidade</th>
+              <td mat-cell *matCellDef="let plantao">{{ plantao.especialidade }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="inicio">
+              <th mat-header-cell *matHeaderCellDef>Início</th>
+              <td mat-cell *matCellDef="let plantao">
+                {{ plantao.inicio | date : 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="fim">
+              <th mat-header-cell *matHeaderCellDef>Fim</th>
+              <td mat-cell *matCellDef="let plantao">
                 {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
               </td>
-              <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
-              <td>{{ plantao.status }}</td>
-              <td>
-                <button class="btn btn-sm btn-info">Detalhes</button>
+            </ng-container>
+
+            <ng-container matColumnDef="valor">
+              <th mat-header-cell *matHeaderCellDef>Valor</th>
+              <td mat-cell *matCellDef="let plantao">{{ plantao.valor | currency : 'BRL' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let plantao">
+                <mat-chip-row [color]="getChipColor(plantao.status)" selected>
+                  {{ plantao.status }}
+                </mat-chip-row>
               </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <ng-template #emptyListMedico><p>Nenhum plantão encontrado para você.</p></ng-template>
-    </ng-container>
+            </ng-container>
 
-    <ng-container *ngIf="isAdminOrEscalista">
-      <div *ngIf="plantoesPaginados && plantoesPaginados.content.length > 0; else emptyListAdmin">
-        <table class="plantao-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Local</th>
-              <th>Especialidade</th>
-              <th>Horário</th>
-              <th>Valor</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let plantao of plantoesPaginados.content">
-              <td>{{ plantao.id }}</td>
-              <td>{{ plantao.nomeHospital }}</td>
-              <td>{{ plantao.especialidade }}</td>
-              <td>
-                {{ plantao.inicio | date : 'dd/MM/yyyy - HH:mm' }} ~
-                {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
-              </td>
-              <td>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</td>
-              <td>{{ plantao.status }}</td>
-              <td class="action-buttons">
-                <button class="btn btn-sm btn-details me-1">Ver Detalhes</button>
-
+            <ng-container matColumnDef="acoes">
+              <th mat-header-cell *matHeaderCellDef>Ações</th>
+              <td mat-cell *matCellDef="let plantao" class="coluna-acoes">
                 <button
-                  class="btn btn-icon btn-primary me-1"
-                  (click)="editarPlantao(plantao.id)"
-                  title="Editar Plantão"
+                  mat-icon-button
+                  (click)="verDetalhesPlantao(plantao.id)"
+                  matTooltip="Ver Detalhes"
+                  aria-label="Ver detalhes do plantão"
                 >
-                  <i class="fas fa-edit"></i>
-                </button>
-
-                <button
-                  class="btn btn-icon btn-danger"
-                  (click)="excluirPlantao(plantao.id)"
-                  title="Excluir Plantão"
-                >
-                  <i class="fas fa-trash-alt"></i>
+                  <mat-icon>visibility</mat-icon>
                 </button>
               </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="paginacao" *ngIf="plantoesPaginados.totalPages > 1">
-          <button
-            (click)="paginaAnterior()"
-            [disabled]="plantoesPaginados.first"
-            class="btn btn-secondary btn-sm"
-          >
-            Anterior
-          </button>
-          <span
-            >Página {{ plantoesPaginados.number + 1 }} de {{ plantoesPaginados.totalPages }}</span
-          >
-          <button
-            (click)="proximaPagina()"
-            [disabled]="plantoesPaginados.last"
-            class="btn btn-secondary btn-sm"
-          >
-            Próxima
-          </button>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsMedico"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsMedico"></tr>
+          </table>
         </div>
       </div>
-      <ng-template #emptyListAdmin><p>Nenhum plantão disponível encontrado.</p></ng-template>
-    </ng-container>
-  </div>
-</div>
+      <ng-template #noPlantoesMedico>
+        <div class="no-results-message">
+          <p>Você ainda não possui plantões cadastrados.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && isAdminOrEscalista" class="table-section">
+      <h3>Todos os Plantões</h3>
+      <ng-container *ngIf="!isLoading && isAdminOrEscalista && plantoesPaginados as pagina">
+        <div *ngIf="pagina.content && pagina.content.length > 0; else noPlantoesAdmin">
+          <div class="table-responsive-wrapper">
+            <table mat-table [dataSource]="pagina.content" class="mat-elevation-z8 plantao-table">
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let plantao">{{ plantao.id }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="hospitalNome">
+                <th mat-header-cell *matHeaderCellDef>Hospital</th>
+                <td mat-cell *matCellDef="let plantao">{{ plantao.nomeHospital }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="especialidade">
+                <th mat-header-cell *matHeaderCellDef>Especialidade</th>
+                <td mat-cell *matCellDef="let plantao">{{ plantao.especialidade }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="inicio">
+                <th mat-header-cell *matHeaderCellDef>Início</th>
+                <td mat-cell *matCellDef="let plantao">
+                  {{ plantao.inicio | date : 'dd/MM/yyyy HH:mm' }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="fim">
+                <th mat-header-cell *matHeaderCellDef>Fim</th>
+                <td mat-cell *matCellDef="let plantao">
+                  {{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="valor">
+                <th mat-header-cell *matHeaderCellDef>Valor</th>
+                <td mat-cell *matCellDef="let plantao">{{ plantao.valor | currency : 'BRL' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let plantao">
+                  <mat-chip-row [color]="getChipColor(plantao.status)" selected>
+                    {{ plantao.status }}
+                  </mat-chip-row>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="medicoNome">
+                <th mat-header-cell *matHeaderCellDef>Médico</th>
+                <td mat-cell *matCellDef="let plantao">{{ plantao.nomeMedico || 'N/A' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="acoes">
+                <th mat-header-cell *matHeaderCellDef>Ações</th>
+                <td mat-cell *matCellDef="let plantao" class="coluna-acoes">
+                  <button
+                    mat-icon-button
+                    (click)="verDetalhesPlantao(plantao.id)"
+                    matTooltip="Ver Detalhes"
+                    aria-label="Ver detalhes do plantão"
+                  >
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="editarPlantao(plantao.id)"
+                    matTooltip="Editar"
+                    aria-label="Editar plantão"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="excluirPlantao(plantao.id)"
+                    matTooltip="Excluir"
+                    aria-label="Excluir plantão"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumnsAdmin"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsAdmin"></tr>
+            </table>
+          </div>
+
+          <mat-paginator
+            [length]="pagina.totalElements"
+            [pageSize]="pagina.size"
+            [pageSizeOptions]="[5, 10, 20]"
+            (page)="onPageChange($event)"
+            aria-label="Selecionar página"
+            class="mat-elevation-z8 custom-paginator"
+          >
+          </mat-paginator>
+        </div>
+      </ng-container>
+
+      <ng-template #noPlantoesAdmin>
+        <div class="no-results-message">
+          <p>Não há plantões disponíveis para gerenciar no momento.</p>
+        </div>
+      </ng-template>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -21,6 +21,7 @@ import { AuthService } from '../../core/services/auth.service';
 export class SidebarComponent {
   isCollapsed: boolean = false;
   activeDropdown: string | null = null;
+  unreadAlertsCount: number = 0;
 
   @ViewChildren('submenuRef') submenus!: QueryList<ElementRef>;
 
@@ -49,18 +50,14 @@ export class SidebarComponent {
     event.stopPropagation();
     if (this.isCollapsed) return;
 
-    if (this.activeDropdown === dropdownName) {
-      this.activeDropdown = null;
-    } else {
-      this.activeDropdown = dropdownName;
-    }
+    const isOpening = this.activeDropdown !== dropdownName;
+    this.activeDropdown = isOpening ? dropdownName : null;
 
     this.submenus.forEach((submenuElement) => {
       const parentLi = this.renderer.parentNode(submenuElement.nativeElement);
       const dataDropdownName = parentLi.getAttribute('data-dropdown-name');
-      const isCurrentDropdown = dataDropdownName === dropdownName;
 
-      if (isCurrentDropdown && this.activeDropdown === dropdownName) {
+      if (dataDropdownName === dropdownName && isOpening) {
         this.renderer.setStyle(
           submenuElement.nativeElement,
           'max-height',
@@ -73,9 +70,11 @@ export class SidebarComponent {
   }
 
   closeAllSubmenus(): void {
-    this.submenus.forEach((submenuElement) => {
-      this.renderer.setStyle(submenuElement.nativeElement, 'max-height', '0');
-    });
+    if (this.submenus) {
+      this.submenus.forEach((submenuElement) => {
+        this.renderer.setStyle(submenuElement.nativeElement, 'max-height', '0');
+      });
+    }
   }
 
   logout(): void {

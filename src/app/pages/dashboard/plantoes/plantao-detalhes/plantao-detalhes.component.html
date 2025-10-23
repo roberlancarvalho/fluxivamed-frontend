@@ -1,0 +1,117 @@
+<div class="plantao-detalhes-container">
+  <p-toast></p-toast>
+  <h2>Detalhes do Plantão</h2>
+
+  <div *ngIf="plantao" class="detalhes-card">
+    <div class="header">
+      <h3>Plantão #{{ plantao.id }}</h3>
+      <p-tag [value]="plantao.status" [severity]="getSeverity(plantao.status)"></p-tag>
+    </div>
+
+    <div class="info-group">
+      <div class="info-item">
+        <strong>Hospital:</strong>
+        <span>{{ plantao.hospitalNome }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Especialidade:</strong>
+        <span>{{ plantao.especialidade }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Início:</strong>
+        <span>{{ plantao.inicio | date : 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Fim:</strong>
+        <span>{{ plantao.fim | date : 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Valor:</strong>
+        <span>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</span>
+      </div>
+      <div class="info-item" *ngIf="plantao.medicoNome">
+        <strong>Médico Alocado:</strong>
+        <span>{{ plantao.medicoNome }}</span>
+      </div>
+    </div>
+
+    <ng-container *ngIf="authService.hasRole('HOSPITAL_ADMIN')">
+      <div class="candidatos-section" *ngIf="plantao.candidatos && plantao.candidatos.length > 0">
+        <h4>Candidatos</h4>
+        <p-table [value]="plantao.candidatos" dataKey="id">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Ações</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-medico>
+            <tr>
+              <td>{{ medico.user.fullName }}</td>
+              <td>{{ medico.user.email }}</td>
+              <td>
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-check"
+                  label="Aprovar"
+                  class="p-button-success p-mr-2"
+                  (click)="aprovarCandidatura(medico.id)"
+                  [disabled]="isLoading || plantao.status !== 'AGUARDANDO_APROVACAO'"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <div
+        *ngIf="
+          plantao.candidatos &&
+          plantao.candidatos.length === 0 &&
+          plantao.status === 'AGUARDANDO_APROVACAO'
+        "
+        class="no-candidatos"
+      >
+        <p>Este plantão não possui candidatos no momento, mas está aguardando aprovação.</p>
+      </div>
+
+      <div *ngIf="plantao.status === 'DISPONIVEL'" class="no-candidatos">
+        <p>Este plantão está disponível e ainda não possui candidatos.</p>
+      </div>
+    </ng-container>
+
+    <div class="button-group">
+      <button
+        pButton
+        type="button"
+        label="Voltar"
+        class="p-button-secondary"
+        (click)="voltar()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Editar Plantão"
+        icon="pi pi-pencil"
+        class="p-button-info"
+        (click)="editarPlantao(plantao.id)"
+        *ngIf="authService.hasRole('HOSPITAL_ADMIN') && plantao.status === 'DISPONIVEL'"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Candidatar-se"
+        icon="pi pi-briefcase"
+        class="p-button-primary"
+        (click)="candidatar(plantao.id)"
+        *ngIf="authService.hasRole('MEDICO') && plantao.status === 'DISPONIVEL'"
+      ></button>
+    </div>
+  </div>
+
+  <div *ngIf="!plantao && !isLoading" class="no-data">
+    <p>Plantão não encontrado ou ocorreu um erro ao carregar.</p>
+  </div>
+</div>

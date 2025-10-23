@@ -21,57 +21,6 @@
 
   <nav class="sidebar-nav">
     <ul>
-      <li
-        *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')"
-        [attr.data-dropdown-name]="'gerenciamento'"
-      >
-        <div
-          class="menu-item"
-          (click)="toggleDropdown('gerenciamento', $event)"
-          [class.active]="activeDropdown === 'gerenciamento'"
-        >
-          <a class="main-link">
-            <i class="fas fa-tasks"></i>
-            <span *ngIf="!isCollapsed">Gerenciamento</span>
-            <i
-              class="fas fa-angle-down dropdown-icon"
-              [class.rotated]="activeDropdown === 'gerenciamento'"
-              *ngIf="!isCollapsed"
-            ></i>
-          </a>
-        </div>
-        <ul
-          #submenuRef
-          class="submenu"
-          [style.max-height]="activeDropdown === 'gerenciamento' && !isCollapsed ? 'auto' : '0px'"
-        >
-          <li>
-            <a routerLink="/dashboard/gerenciamento/medicos" routerLinkActive="active">
-              <i class="fas fa-user-md"></i>
-              <span>Médicos</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/dashboard/gerenciamento/hospitais" routerLinkActive="active">
-              <i class="fas fa-hospital"></i>
-              <span>Hospitais</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/dashboard/gerenciamento/especialidades" routerLinkActive="active">
-              <i class="fas fa-clinic-medical"></i>
-              <span>Especialidades</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/dashboard/plantoes" routerLinkActive="active">
-              <i class="fas fa-clinic-medical"></i>
-              <span>Plantões</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-
       <li>
         <a routerLink="/dashboard/overview" routerLinkActive="active" class="menu-item">
           <i class="fas fa-th-large"></i>
@@ -79,35 +28,228 @@
         </a>
       </li>
 
-      <li *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')">
-        <a routerLink="/dashboard/plantoes/criar" routerLinkActive="active" class="menu-item">
-          <i class="fas fa-plus-circle"></i>
-          <span *ngIf="!isCollapsed">Criar Plantão</span>
+      <li>
+        <a routerLink="/dashboard/alertas" routerLinkActive="active" class="menu-item">
+          <i class="fas fa-bell"></i>
+          <span *ngIf="!isCollapsed"
+            >Alertas
+            <span class="badge" *ngIf="unreadAlertsCount > 0">{{ unreadAlertsCount }}</span></span
+          >
         </a>
       </li>
 
-      <li *ngIf="hasRole('MEDICO')">
-        <a routerLink="/dashboard/plantoes" routerLinkActive="active" class="menu-item">
-          <i class="fas fa-calendar-alt"></i>
-          <span *ngIf="!isCollapsed">Meus Plantões</span>
-        </a>
+      <li
+        *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')"
+        [attr.data-dropdown-name]="'medicos'"
+      >
+        <div
+          class="menu-item"
+          (click)="toggleDropdown('medicos', $event)"
+          [class.active]="activeDropdown === 'medicos'"
+        >
+          <a class="main-link">
+            <i class="fas fa-user-md"></i>
+            <span *ngIf="!isCollapsed">Médicos</span>
+            <i
+              class="fas fa-angle-down dropdown-icon"
+              [class.rotated]="activeDropdown === 'medicos'"
+              *ngIf="!isCollapsed"
+            ></i>
+          </a>
+        </div>
+        <ul #submenuRef class="submenu">
+          <li>
+            <a routerLink="/dashboard/medicos" routerLinkActive="active">
+              <i class="fas fa-list"></i>
+              <span>Listar Médicos</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard/medicos/criar" routerLinkActive="active">
+              <i class="fas fa-user-plus"></i>
+              <span>Cadastrar Médico</span>
+            </a>
+          </li>
+        </ul>
       </li>
-      <li *ngIf="hasRole('MEDICO')">
-        <a routerLink="/dashboard/buscar-plantoes" routerLinkActive="active" class="menu-item">
-          <i class="fas fa-search"></i>
-          <span *ngIf="!isCollapsed">Buscar Plantões</span>
-        </a>
+
+      <li
+        *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')"
+        [attr.data-dropdown-name]="'hospitais'"
+      >
+        <div
+          class="menu-item"
+          (click)="toggleDropdown('hospitais', $event)"
+          [class.active]="activeDropdown === 'hospitais'"
+        >
+          <a class="main-link">
+            <i class="fas fa-hospital"></i>
+            <span *ngIf="!isCollapsed">Hospitais</span>
+            <i
+              class="fas fa-angle-down dropdown-icon"
+              [class.rotated]="activeDropdown === 'hospitais'"
+              *ngIf="!isCollapsed"
+            ></i>
+          </a>
+        </div>
+        <ul #submenuRef class="submenu">
+          <li>
+            <a routerLink="/dashboard/hospitais" routerLinkActive="active">
+              <i class="fas fa-list"></i>
+              <span>Listar Hospitais</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard/hospitais/criar" routerLinkActive="active">
+              <i class="fas fa-plus-square"></i>
+              <span>Cadastrar Hospital</span>
+            </a>
+          </li>
+        </ul>
       </li>
-      <li *ngIf="hasRole('MEDICO')">
-        <a routerLink="/dashboard/disponibilidade" routerLinkActive="active" class="menu-item">
-          <i class="fas fa-calendar-check"></i>
-          <span *ngIf="!isCollapsed">Disponibilidade</span>
-        </a>
+
+      <li
+        *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')"
+        [attr.data-dropdown-name]="'especialidades'"
+      >
+        <div
+          class="menu-item"
+          (click)="toggleDropdown('especialidades', $event)"
+          [class.active]="activeDropdown === 'especialidades'"
+        >
+          <a class="main-link">
+            <i class="fas fa-clinic-medical"></i>
+            <span *ngIf="!isCollapsed">Especialidades</span>
+            <i
+              class="fas fa-angle-down dropdown-icon"
+              [class.rotated]="activeDropdown === 'especialidades'"
+              *ngIf="!isCollapsed"
+            ></i>
+          </a>
+        </div>
+        <ul #submenuRef class="submenu">
+          <li>
+            <a routerLink="/dashboard/especialidades" routerLinkActive="active">
+              <i class="fas fa-list"></i>
+              <span>Listar Especialidades</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard/especialidades/criar" routerLinkActive="active">
+              <i class="fas fa-plus-square"></i>
+              <span>Cadastrar Especialidade</span>
+            </a>
+          </li>
+        </ul>
       </li>
+
+      <li
+        [attr.data-dropdown-name]="'plantoes'"
+        *ngIf="
+          hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA') || hasRole('MEDICO')
+        "
+      >
+        <div
+          class="menu-item"
+          (click)="toggleDropdown('plantoes', $event)"
+          [class.active]="activeDropdown === 'plantoes'"
+        >
+          <a class="main-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span *ngIf="!isCollapsed">Plantões</span>
+            <i
+              class="fas fa-angle-down dropdown-icon"
+              [class.rotated]="activeDropdown === 'plantoes'"
+              *ngIf="!isCollapsed"
+            ></i>
+          </a>
+        </div>
+        <ul #submenuRef class="submenu">
+          <ng-container
+            *ngIf="hasRole('ADMIN') || hasRole('HOSPITAL_ADMIN') || hasRole('ESCALISTA')"
+          >
+            <li>
+              <a routerLink="/dashboard/plantoes" routerLinkActive="active">
+                <i class="fas fa-list"></i>
+                <span>Listar Plantões</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/dashboard/plantoes/criar" routerLinkActive="active">
+                <i class="fas fa-plus-circle"></i>
+                <span>Criar Plantão</span>
+              </a>
+            </li>
+          </ng-container>
+
+          <ng-container *ngIf="hasRole('MEDICO')">
+            <li>
+              <a routerLink="/dashboard/plantoes/meus-plantoes" routerLinkActive="active">
+                <i class="fas fa-user-clock"></i> <span>Meus Plantões</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/dashboard/plantoes/buscar" routerLinkActive="active">
+                <i class="fas fa-search"></i>
+                <span>Buscar Plantões</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/dashboard/disponibilidade" routerLinkActive="active">
+                <i class="fas fa-calendar-check"></i>
+                <span>Minha Disponibilidade</span>
+              </a>
+            </li>
+          </ng-container>
+        </ul>
+      </li>
+
+      <li [attr.data-dropdown-name]="'financeiro'">
+        <div
+          class="menu-item"
+          (click)="toggleDropdown('financeiro', $event)"
+          [class.active]="activeDropdown === 'financeiro'"
+        >
+          <a class="main-link">
+            <i class="fas fa-dollar-sign"></i>
+            <span *ngIf="!isCollapsed">Financeiro</span>
+            <i
+              class="fas fa-angle-down dropdown-icon"
+              [class.rotated]="activeDropdown === 'financeiro'"
+              *ngIf="!isCollapsed"
+            ></i>
+          </a>
+        </div>
+        <ul #submenuRef class="submenu">
+          <li>
+            <a routerLink="/dashboard/financeiro/extrato" routerLinkActive="active">
+              <i class="fas fa-file-invoice-dollar"></i> <span>Extrato de Pagamentos</span>
+            </a>
+          </li>
+          <li *ngIf="hasRole('ADMIN')">
+            <a routerLink="/dashboard/financeiro/relatorios" routerLinkActive="active">
+              <i class="fas fa-chart-line"></i> <span>Relatórios Fiscais</span>
+            </a>
+          </li>
+          <li *ngIf="hasRole('MEDICO')">
+            <a routerLink="/dashboard/financeiro/comprovantes" routerLinkActive="active">
+              <i class="fas fa-receipt"></i> <span>Meus Comprovantes</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
       <li>
         <a routerLink="/dashboard/perfil" routerLinkActive="active" class="menu-item">
           <i class="fas fa-user-circle"></i>
           <span *ngIf="!isCollapsed">Meu Perfil</span>
+        </a>
+      </li>
+
+      <li>
+        <a routerLink="/dashboard/ajuda" routerLinkActive="active" class="menu-item">
+          <i class="fas fa-question-circle"></i>
+          <span *ngIf="!isCollapsed">Ajuda</span>
         </a>
       </li>
     </ul>

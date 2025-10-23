@@ -1,0 +1,169 @@
+<div class="criar-medico-container">
+  <p-toast></p-toast>
+  <h2>{{ isEditMode ? 'Editar Médico' : 'Cadastrar Novo Médico' }}</h2>
+
+  <form [formGroup]="medicoForm" (ngSubmit)="onSubmit()" class="medico-form">
+    <div class="form-group">
+      <label for="nomeCompleto">Nome Completo:</label>
+      <input
+        type="text"
+        id="nomeCompleto"
+        formControlName="nomeCompleto"
+        class="form-control"
+        placeholder="Nome completo do médico"
+      />
+      <div
+        *ngIf="
+          medicoForm.get('nomeCompleto')?.invalid &&
+          (medicoForm.get('nomeCompleto')?.dirty || medicoForm.get('nomeCompleto')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="medicoForm.get('nomeCompleto')?.errors?.['required']">
+          Nome Completo é obrigatório.
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="crm">CRM:</label>
+      <input
+        type="text"
+        id="crm"
+        formControlName="crm"
+        class="form-control"
+        placeholder="CRM do médico"
+      />
+      <div
+        *ngIf="
+          medicoForm.get('crm')?.invalid &&
+          (medicoForm.get('crm')?.dirty || medicoForm.get('crm')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="medicoForm.get('crm')?.errors?.['required']">CRM é obrigatório.</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="especialidade">Especialidade:</label>
+      <select
+        id="especialidade"
+        formControlName="especialidade"
+        class="form-control"
+        [class.ng-invalid]="
+          medicoForm.get('especialidade')?.invalid && medicoForm.get('especialidade')?.touched
+        "
+      >
+        <option value="" disabled>Selecione uma especialidade</option>
+        <option *ngFor="let esp of especialidadesDisponiveis" [value]="esp">{{ esp }}</option>
+      </select>
+      <div
+        *ngIf="medicoForm.get('especialidade')?.invalid && medicoForm.get('especialidade')?.touched"
+        class="error-message"
+      >
+        Especialidade é obrigatória.
+      </div>
+    </div>
+
+    <div class="form-group" *ngIf="showOtherEspecialidadeInput">
+      <label for="outraEspecialidade">Outra Especialidade:</label>
+      <input
+        type="text"
+        id="outraEspecialidade"
+        formControlName="outraEspecialidade"
+        class="form-control"
+        placeholder="Digite a especialidade"
+      />
+      <div
+        *ngIf="
+          medicoForm.get('outraEspecialidade')?.invalid &&
+          (medicoForm.get('outraEspecialidade')?.dirty ||
+            medicoForm.get('outraEspecialidade')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="medicoForm.get('outraEspecialidade')?.errors?.['required']">
+          A especialidade é obrigatória.
+        </span>
+        <span *ngIf="medicoForm.get('outraEspecialidade')?.errors?.['pattern']">
+          A especialidade deve conter apenas letras e espaços.
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">E-mail:</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="form-control"
+        placeholder="E-mail do médico"
+        [readonly]="isEditMode"
+      />
+      <div
+        *ngIf="
+          medicoForm.get('email')?.invalid &&
+          (medicoForm.get('email')?.dirty || medicoForm.get('email')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="medicoForm.get('email')?.errors?.['required']">E-mail é obrigatório.</span>
+        <span *ngIf="medicoForm.get('email')?.errors?.['email']">
+          Por favor, insira um e-mail válido.
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group" *ngIf="!isEditMode">
+      <label for="password">Senha:</label>
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        class="form-control"
+        placeholder="Senha para o acesso do médico"
+      />
+      <div
+        *ngIf="
+          medicoForm.get('password')?.invalid &&
+          (medicoForm.get('password')?.dirty || medicoForm.get('password')?.touched)
+        "
+        class="error-message"
+      >
+        <span *ngIf="medicoForm.get('password')?.errors?.['required']">Senha é obrigatória.</span>
+        <span *ngIf="medicoForm.get('password')?.errors?.['minlength']">
+          A senha deve ter no mínimo 6 caracteres.
+        </span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        pButton
+        type="button"
+        label="Cancelar"
+        (click)="cancelar()"
+        class="p-button-secondary p-button-lg"
+        [disabled]="isLoading"
+      ></button>
+      <button
+        pButton
+        type="submit"
+        [label]="
+          isEditMode
+            ? isLoading
+              ? 'Atualizando...'
+              : 'Atualizar Médico'
+            : isLoading
+            ? 'Cadastrando...'
+            : 'Cadastrar Médico'
+        "
+        [disabled]="medicoForm.invalid || isLoading"
+        [icon]="isLoading ? 'pi pi-spin pi-spinner' : isEditMode ? 'pi pi-save' : 'pi pi-user-plus'"
+        class="p-button-primary p-button-lg"
+      ></button>
+    </div>
+  </form>
+</div>

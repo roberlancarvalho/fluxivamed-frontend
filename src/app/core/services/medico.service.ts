@@ -3,6 +3,22 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface MedicoRequest {
+  email: string;
+  password?: string;
+  nomeCompleto: string;
+  crm: string;
+  especialidade: string;
+}
+
+export interface MedicoResponseDTO {
+  id: number;
+  nomeCompleto: string;
+  crm: string;
+  especialidade: string;
+  email: string;
+}
+
 export interface MedicoDisponivelDTO {
   id: number;
   nomeCompleto: string;
@@ -35,6 +51,23 @@ export class MedicoService {
   private apiUrl = `${environment.apiUrl}/api/v1/medicos`;
 
   constructor(private http: HttpClient) {}
+
+  criarMedico(medico: MedicoRequest): Observable<MedicoResponseDTO> {
+    return this.http.post<MedicoResponseDTO>(`${this.apiUrl}/register`, medico);
+  }
+
+  getMedicoById(id: number): Observable<MedicoResponseDTO> {
+    return this.http.get<MedicoResponseDTO>(`${this.apiUrl}/${id}`);
+  }
+
+  atualizarMedico(id: number, medico: MedicoRequest): Observable<MedicoResponseDTO> {
+    const { password, ...updateData } = medico;
+    return this.http.put<MedicoResponseDTO>(`${this.apiUrl}/${id}`, updateData);
+  }
+
+  getTodosMedicos(): Observable<MedicoResponseDTO[]> {
+    return this.http.get<MedicoResponseDTO[]>(this.apiUrl);
+  }
 
   findMedicosDisponiveis(
     params: MedicoBuscaDisponibilidadeParams

@@ -1,12 +1,35 @@
 <header class="header-container">
   <div class="header-content">
     <h1 class="page-title">{{ pageTitle }}</h1>
-    <div class="user-info">
-      <span class="greeting-text">Olá,</span>
-      <span class="user-name">{{ userName }}</span>
-      <button class="logout-btn" (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i> Sair
+
+    <div class="header-actions">
+      <button class="action-btn" (click)="onAlertsClick()" title="Alertas">
+        <i class="fas fa-bell"></i>
+        <span *ngIf="unreadAlertsCount > 0" class="badge">{{ unreadAlertsCount }}</span>
       </button>
+
+      <button class="action-btn" (click)="onSettingsClick()" title="Configurações">
+        <i class="fas fa-cog"></i>
+      </button>
+
+      <div class="profile-menu-container" (click)="$event.stopPropagation()">
+        <button class="action-btn profile-btn" (click)="toggleProfileMenu()" title="Meu Perfil">
+          <i class="fas fa-user-circle"></i>
+          <span>Olá, {{ userName }}</span>
+          <i class="fas fa-angle-down arrow-icon" [class.rotated]="isProfileMenuOpen"></i>
+        </button>
+
+        <div class="profile-dropdown" [class.show]="isProfileMenuOpen">
+          <a routerLink="/dashboard/perfil" (click)="closeProfileMenu()">
+            <i class="fas fa-user-edit"></i>
+            <span>Meu Perfil</span>
+          </a>
+          <a (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sair</span>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </header>

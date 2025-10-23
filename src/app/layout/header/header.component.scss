@@ -1,12 +1,25 @@
+@use 'sass:color';
+
+/* Variáveis de Cor (ajuste conforme seu tema) */
+$primary-color: #4a90e2;
+$text-color-light: #666;
+$text-color-dark: #333;
+$border-color: #eee;
+$danger-color: #dc3545;
+$danger-hover: #c82333;
+$dropdown-bg: #ffffff;
+$dropdown-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+$dropdown-hover: #f4f7f6;
+
 .header-container {
-  background-color: #ffffff;
-  padding: 15px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: $dropdown-bg;
+  padding: 0 20px; /* Reduzido padding vertical, altura controlada por height */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: 60px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $border-color;
+  z-index: 1001; /* Para ficar acima do conteúdo */
 }
 
 .header-content {
@@ -18,70 +31,163 @@
 
 .page-title {
   font-size: 1.5em;
-  color: #333;
+  color: $text-color-dark;
   margin: 0;
   font-weight: 600;
 }
 
-.user-info {
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 10px; /* Espaçamento entre os elementos */
+  gap: 10px;
 }
 
-.greeting-text {
-  color: #666;
-  font-size: 0.9em;
-}
-
-.user-name {
-  font-weight: bold;
-  color: #007bff; /* Ou a cor primária do seu tema */
-  font-size: 1em;
-}
-
-.logout-btn {
-  background-color: #dc3545; /* Cor vermelha para logout */
-  color: white;
+.action-btn {
+  background: none;
   border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
+  color: $text-color-light;
+  font-size: 1.2rem;
+  padding: 10px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 0.9em;
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 5px; /* Espaço entre ícone e texto */
+  justify-content: center;
+  width: 40px; /* Tamanho fixo */
+  height: 40px; /* Tamanho fixo */
+  transition: background-color 0.2s, color 0.2s;
 
   &:hover {
-    background-color: #c82333;
+    background-color: $dropdown-hover;
+    color: $primary-color;
+  }
+
+  i {
+    margin: 0; /* Remove a margem direita do .fas global */
+  }
+
+  .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: $danger-color;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 50%;
+    line-height: 1;
   }
 }
 
-/* Estilo para ícones, se estiver usando Font Awesome */
-.fas {
-  margin-right: 5px;
+.profile-menu-container {
+  position: relative;
+
+  .profile-btn {
+    width: auto; /* Permite que o botão de perfil se ajuste ao nome */
+    height: 40px;
+    border-radius: 20px; /* Bordas arredondadas */
+    padding: 0 15px 0 10px;
+    gap: 8px;
+
+    span {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $text-color-dark;
+    }
+
+    .arrow-icon {
+      font-size: 0.8rem;
+      color: $text-color-light;
+      transition: transform 0.2s ease;
+    }
+
+    .arrow-icon.rotated {
+      transform: rotate(180deg);
+    }
+  }
 }
-/* Responsividade */
+
+.profile-dropdown {
+  position: absolute;
+  top: 110%; /* Ligeiramente abaixo do botão */
+  right: 0;
+  background-color: $dropdown-bg;
+  border-radius: 8px;
+  box-shadow: $dropdown-shadow;
+  width: 200px;
+  overflow: hidden;
+  z-index: 1002;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: $text-color-dark;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    i {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+      color: $text-color-light;
+    }
+
+    &:hover {
+      background-color: $dropdown-hover;
+      color: $primary-color;
+      i {
+        color: $primary-color;
+      }
+    }
+
+    // Estilo específico para o Sair
+    &:last-child {
+      border-top: 1px solid $border-color;
+      &:hover {
+        color: $danger-color;
+        i {
+          color: $danger-color;
+        }
+      }
+    }
+  }
+}
+
+/* Responsividade (Ajuste simplificado) */
 @media (max-width: 600px) {
   .header-container {
-    flex-direction: column;
-    align-items: flex-start;
-    height: auto; /* Altura automática para dispositivos móveis */
-    padding: 10px 15px;
+    padding: 0 10px;
   }
-
   .page-title {
     font-size: 1.2em;
-    margin-bottom: 10px;
   }
-
-  .user-info {
-    width: 100%;
-    justify-content: space-between;
+  .profile-btn span {
+    display: none; /* Esconde o nome em telas pequenas */
   }
-
-  .logout-btn {
-    padding: 6px 10px;
-    font-size: 0.8em;
+  .profile-btn {
+    padding: 0;
+    width: 40px; /* Volta a ser um ícone redondo */
+  }
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    padding: 8px;
   }
 }

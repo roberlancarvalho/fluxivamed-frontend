@@ -31,14 +31,14 @@ export const routes: Routes = [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: OverviewComponent, title: 'FluxivaMed - Visão Geral' },
       {
-        path: 'plantoes',
+        path: 'plantoes/meus-plantoes',
         component: PlantaoListComponent,
         title: 'FluxivaMed - Meus Plantões',
         canActivate: [authGuard],
         data: { roles: ['MEDICO', 'ADMIN', 'HOSPITAL_ADMIN', 'ESCALISTA'] },
       },
       {
-        path: 'disponiveis',
+        path: 'plantoes/disponiveis',
         component: BuscarPlantoesComponent,
         title: 'FluxivaMed - Buscar Plantões',
         canActivate: [authGuard],

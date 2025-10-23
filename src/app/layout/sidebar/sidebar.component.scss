@@ -234,10 +234,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     list-style: none;
     padding: 0;
     margin: 0;
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease-out;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: $submenu-bg;
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.3s ease-out;
@@ -295,16 +292,6 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
       color: $active-item-color;
     }
   }
-}
-
-.submenu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  background-color: rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.3s ease-out;
 }
 
 .badge {

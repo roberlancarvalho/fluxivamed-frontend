@@ -14,6 +14,7 @@ interface JwtPayload {
   scope: string[];
   exp: number;
   iat: number;
+  fullName: string;
 }
 
 @Injectable({
@@ -23,6 +24,7 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private userRoles: string[] = [];
   private currentUserEmail: string | null = null;
+  private currentUserName: string | null = null;
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
   constructor(private http: HttpClient) {
@@ -37,6 +39,14 @@ export class AuthService {
     return [...this.userRoles];
   }
 
+  public getUserName(): string | null {
+    return this.currentUserName;
+  }
+
+  public getUserFullName(): string | null {
+    return this.currentUserName;
+  }
+
   private hasToken(): boolean {
     return !!localStorage.getItem('accessToken');
   }
@@ -46,12 +56,14 @@ export class AuthService {
       const payload: JwtPayload = JSON.parse(atob(token.split('.')[1]));
       this.userRoles = payload.scope || [];
       this.currentUserEmail = payload.sub || null;
+      this.currentUserName = payload.fullName || null;
       console.log('Roles do usuário carregadas:', this.userRoles);
       console.log('Email do usuário carregado:', this.currentUserEmail);
     } catch (e) {
       console.error('Erro ao decodificar o token JWT:', e);
       this.userRoles = [];
       this.currentUserEmail = null;
+      this.currentUserName = null;
     }
   }
 
@@ -62,6 +74,7 @@ export class AuthService {
     } else {
       this.userRoles = [];
       this.currentUserEmail = null;
+      this.currentUserName = null;
     }
     this.loggedIn.next(this.hasToken());
   }
@@ -100,6 +113,7 @@ export class AuthService {
     localStorage.removeItem('accessToken');
     this.userRoles = [];
     this.currentUserEmail = null;
+    this.currentUserName = null;
     this.loggedIn.next(false);
     console.log('Logout efetuado. Token, roles e email removidos.');
   }

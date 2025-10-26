@@ -1,1 +1,110 @@
-<h1>Visão Geral do Dashboard</h1>
+<div class="overview-container">
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>Carregando...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <h1 class="welcome-title">Bem-vindo(a), {{ userName }}!</h1>
+
+    <ng-container *ngIf="isAdminOrEscalista && adminStats">
+      <h2>Resumo da Plataforma</h2>
+      <div class="stat-grid">
+        <mat-card class="stat-card accent">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon>pending_actions</mat-icon></div>
+            <mat-card-title>{{ adminStats.plantoesPendentes }}</mat-card-title>
+            <mat-card-subtitle>Candidaturas Pendentes</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card class="stat-card primary">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon>event_available</mat-icon></div>
+            <mat-card-title>{{ adminStats.plantoesDisponiveis }}</mat-card-title>
+            <mat-card-subtitle>Plantões Disponíveis</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon>people</mat-icon></div>
+            <mat-card-title>{{ adminStats.totalMedicos }}</mat-card-title>
+            <mat-card-subtitle>Total de Médicos</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card class="stat-card warn">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon>attach_money</mat-icon></div>
+            <mat-card-title>{{ adminStats.faturamentoPrevisto | currency : 'BRL' }}</mat-card-title>
+            <mat-card-subtitle>Faturamento Previsto</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+      </div>
+
+      <h2>Ações Rápidas (Admin)</h2>
+      <div class="quick-actions">
+        <button mat-flat-button color="primary" routerLink="/dashboard/plantoes/criar">
+          <mat-icon>add_circle_outline</mat-icon>
+          Criar Novo Plantão
+        </button>
+        <button mat-stroked-button color="primary" routerLink="/dashboard/medicos/criar">
+          <mat-icon>person_add</mat-icon>
+          Cadastrar Médico
+        </button>
+        <button mat-stroked-button color="accent" routerLink="/dashboard/plantoes">
+          <mat-icon>list_alt</mat-icon>
+          Gerenciar Plantões
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="isMedico && medicoStats">
+      <h2>Seu Resumo</h2>
+      <div class="stat-grid">
+        <mat-card class="stat-card primary">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon>event</mat-icon></div>
+            <mat-card-title>{{ medicoStats.proximosPlantoes }}</mat-card-title>
+            <mat-card-subtitle>Próximos Plantões</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card class="stat-card accent">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon>pending_actions</mat-icon></div>
+            <mat-card-title>{{ medicoStats.candidaturasPendentes }}</mat-card-title>
+            <mat-card-subtitle>Candidaturas Pendentes</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+
+        <mat-card class="stat-card warn">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon>payment</mat-icon></div>
+            <mat-card-title>{{
+              medicoStats.pagamentosPendentes | currency : 'BRL'
+            }}</mat-card-title>
+            <mat-card-subtitle>Pagamentos a Receber</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
+      </div>
+
+      <h2>Ações Rápidas (Médico)</h2>
+      <div class="quick-actions">
+        <button mat-flat-button color="primary" routerLink="/dashboard/plantoes/buscar">
+          <mat-icon>search</mat-icon>
+          Buscar Plantões
+        </button>
+        <button mat-stroked-button color="primary" routerLink="/dashboard/disponibilidade">
+          <mat-icon>calendar_today</mat-icon>
+          Minha Disponibilidade
+        </button>
+        <button mat-stroked-button color="accent" routerLink="/dashboard/plantoes">
+          <mat-icon>assignment_ind</mat-icon>
+          Meus Plantões
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

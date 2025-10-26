@@ -18,7 +18,19 @@ export class HospitalService {
 
   constructor(private http: HttpClient) {}
 
+  criarHospital(hospital: Hospital): Observable<Hospital> {
+    return this.http.post<Hospital>(this.apiUrl, hospital);
+  }
+
   getHospitais(): Observable<Hospital[]> {
     return this.http.get<Hospital[]>(this.apiUrl);
+  }
+
+  postHospital(hospital: Hospital): Observable<Hospital> {
+    return this.http.post<Hospital>(this.apiUrl, hospital);
+  }
+
+  putHospital(hospital: Hospital): Observable<Hospital> {
+    return this.http.put<Hospital>(`${this.apiUrl}/${hospital.id}`, hospital);
   }
 }

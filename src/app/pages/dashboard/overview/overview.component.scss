@@ -1,0 +1,118 @@
+/* Usando BEM (Block Element Modifier) para clareza */
+.overview-container {
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #444;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+}
+
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+
+  p {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: #666;
+  }
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .mat-card-header {
+    padding: 20px;
+  }
+
+  .mat-card-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+
+    mat-icon {
+      font-size: 28px;
+      height: 28px;
+      width: 28px;
+      color: #fff;
+    }
+  }
+
+  .mat-card-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .mat-card-subtitle {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Cores dos Cards (Baseado no tema Material) */
+  &.primary {
+    background-color: var(--primary-color, #4a90e2); 
+    color: white;
+  }
+  &.accent {
+    background-color: var(--accent-color, #ffc107);
+    color: white;
+    .mat-card-avatar mat-icon { color: #fff; }
+    .mat-card-title { color: #fff; }
+    .mat-card-subtitle { color: rgba(255, 255, 255, 0.9); }
+  }
+  &.warn {
+    background-color: var(--warn-color, #dc3545);
+    color: white;
+  }
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 1rem;
+
+  button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}

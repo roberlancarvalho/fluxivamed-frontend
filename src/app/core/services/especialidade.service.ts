@@ -3,6 +3,11 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface Especialidade {
+  id: number;
+  nome: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -11,7 +16,7 @@ export class EspecialidadeService {
 
   constructor(private http: HttpClient) {}
 
-  getEspecialidades(): Observable<string[]> {
-    return this.http.get<string[]>(this.apiUrl);
+  getEspecialidades(): Observable<Especialidade[]> {
+    return this.http.get<Especialidade[]>(this.apiUrl);
   }
 }

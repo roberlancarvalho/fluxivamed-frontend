@@ -7,13 +7,18 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { catchError, finalize, of, tap } from 'rxjs';
-import { EspecialidadeService } from '../../../../core/services/especialidade.service';
+import {
+  Especialidade,
+  EspecialidadeService,
+} from '../../../../core/services/especialidade.service';
 import { Hospital, HospitalService } from '../../../../core/services/hospital.service';
 import {
   PlantaoRequest,
   PlantaoResponse,
   PlantaoService,
 } from '../../../../core/services/plantao.service';
+
+const OUTRA_ESPECIALIDADE_PLACEHOLDER: Especialidade = { id: -1, nome: 'Outra' };
 
 @Component({
   selector: 'app-criar-plantao',
@@ -27,7 +32,7 @@ export class CriarPlantaoComponent implements OnInit {
   plantaoForm!: FormGroup;
   hospitais: Hospital[] = [];
   isLoading: boolean = false;
-  especialidadesDisponiveis: string[] = [];
+  especialidadesDisponiveis: Especialidade[] = [];
   showOtherEspecialidadeInput: boolean = false;
   plantaoId: number | null = null;
   isEditMode: boolean = false;
@@ -53,19 +58,25 @@ export class CriarPlantaoComponent implements OnInit {
     this.loadHospitais();
     this.loadEspecialidades();
 
-    this.plantaoForm.get('especialidade')?.valueChanges.subscribe((value) => {
-      this.showOtherEspecialidadeInput = value === 'Outra';
+    this.plantaoForm.get('especialidade')?.valueChanges.subscribe((value: Especialidade | null) => {
+      this.showOtherEspecialidadeInput = this.isOutraEspecialidade(value);
       if (!this.showOtherEspecialidadeInput) {
         this.plantaoForm.get('outraEspecialidade')?.setValue('');
+        this.plantaoForm.get('outraEspecialidade')?.clearValidators();
+      } else {
+        this.plantaoForm
+          .get('outraEspecialidade')
+          ?.setValidators([Validators.required, Validators.pattern(/^[a-zA-Z\s\-]+$/)]);
       }
+      this.plantaoForm.get('outraEspecialidade')?.updateValueAndValidity();
     });
   }
 
   initForm(): void {
     this.plantaoForm = this.fb.group(
       {
-        hospitalId: ['', Validators.required],
-        especialidade: ['', Validators.required],
+        hospitalId: [null, Validators.required],
+        especialidade: [null as Especialidade | null, Validators.required],
         outraEspecialidade: [''],
         inicio: ['', Validators.required],
         fim: ['', Validators.required],
@@ -110,12 +121,13 @@ export class CriarPlantaoComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Erro',
-            detail: 'Não foi possível carregar as especialidades. Usando lista fallback.',
+            detail: 'Não foi possível carregar as especialidades.',
           });
-          return of(['Clínico Geral', 'Pediatra', 'Cardiologista']);
+          return of([]);
         }),
-        tap((data) => {
-          this.especialidadesDisponiveis = [...data, 'Outra'];
+        tap((data: Especialidade[]) => {
+          console.log('Especialidades carregadas (Plantao):', data);
+          this.especialidadesDisponiveis = [...data, OUTRA_ESPECIALIDADE_PLACEHOLDER];
         }),
         finalize(() => {
           this.isLoading = false;
@@ -131,7 +143,7 @@ export class CriarPlantaoComponent implements OnInit {
   loadPlantaoParaEdicao(id: number): void {
     this.isLoading = true;
     this.plantaoService
-      .getPlantaoById(id)
+      .getPlantaoById(id) // Recebe PlantaoResponse com Id e Nome
       .pipe(
         catchError((error) => {
           console.error('Erro ao carregar plantão para edição:', error);
@@ -140,12 +152,13 @@ export class CriarPlantaoComponent implements OnInit {
             summary: 'Erro',
             detail: error.error?.message || 'Não foi possível carregar o plantão para edição.',
           });
-          this.router.navigate(['/dashboard/plantoes']);
+          this.router.navigate(['/dashboard/plantoes/listar-plantoes']);
           return of(null);
         }),
         finalize(() => (this.isLoading = false))
       )
       .subscribe((plantao) => {
+        // plantao é do tipo PlantaoResponse
         if (plantao) {
           const inicioFormatted = this.datePipe.transform(
             new Date(plantao.inicio),
@@ -153,17 +166,29 @@ export class CriarPlantaoComponent implements OnInit {
           );
           const fimFormatted = this.datePipe.transform(new Date(plantao.fim), 'yyyy-MM-ddTHH:mm');
 
-          let especialidadeSelecionada = plantao.especialidade;
+          let especialidadeObj = this.especialidadesDisponiveis.find(
+            (esp) => esp.id === plantao.especialidadeId // <<< USA especialidadeId
+          );
           let outraEspecialidadeValor = '';
 
-          if (!this.especialidadesDisponiveis.includes(plantao.especialidade)) {
-            especialidadeSelecionada = 'Outra';
-            outraEspecialidadeValor = plantao.especialidade;
+          if (!especialidadeObj && plantao.especialidadeNome) {
+            const nomeExisteNaLista = this.especialidadesDisponiveis
+              .filter((e) => e.id !== OUTRA_ESPECIALIDADE_PLACEHOLDER.id)
+              .some((e) => e.nome === plantao.especialidadeNome);
+
+            if (!nomeExisteNaLista) {
+              especialidadeObj = OUTRA_ESPECIALIDADE_PLACEHOLDER;
+              outraEspecialidadeValor = plantao.especialidadeNome;
+            } else if (!especialidadeObj) {
+              especialidadeObj = this.especialidadesDisponiveis.find(
+                (e) => e.nome === plantao.especialidadeNome
+              );
+            }
           }
 
           this.plantaoForm.patchValue({
             hospitalId: plantao.hospitalId,
-            especialidade: especialidadeSelecionada,
+            especialidade: especialidadeObj,
             outraEspecialidade: outraEspecialidadeValor,
             inicio: inicioFormatted,
             fim: fimFormatted,
@@ -173,16 +198,15 @@ export class CriarPlantaoComponent implements OnInit {
       });
   }
 
-  onSubmit(): void {
-    if (this.showOtherEspecialidadeInput) {
-      this.plantaoForm
-        .get('outraEspecialidade')
-        ?.setValidators([Validators.required, Validators.pattern(/^[a-zA-Z\s\-]+$/)]);
-    } else {
-      this.plantaoForm.get('outraEspecialidade')?.clearValidators();
-    }
-    this.plantaoForm.get('outraEspecialidade')?.updateValueAndValidity();
+  compareEspecialidade(o1: Especialidade | null, o2: Especialidade | null): boolean {
+    return o1?.id === o2?.id;
+  }
 
+  isOutraEspecialidade(especialidade: Especialidade | null): boolean {
+    return !!especialidade && especialidade.id === OUTRA_ESPECIALIDADE_PLACEHOLDER.id;
+  }
+
+  onSubmit(): void {
     if (this.plantaoForm.invalid) {
       this.plantaoForm.markAllAsTouched();
       this.messageService.add({
@@ -196,14 +220,26 @@ export class CriarPlantaoComponent implements OnInit {
     this.isLoading = true;
     const formValue = this.plantaoForm.value;
 
-    let finalEspecialidade = formValue.especialidade;
-    if (finalEspecialidade === 'Outra') {
-      finalEspecialidade = formValue.outraEspecialidade;
+    let especialidadeParaEnviar: Especialidade;
+    const especialidadeSelecionada: Especialidade = formValue.especialidade;
+
+    if (this.isOutraEspecialidade(especialidadeSelecionada)) {
+      especialidadeParaEnviar = { id: null as any, nome: formValue.outraEspecialidade };
+    } else if (especialidadeSelecionada && especialidadeSelecionada.id !== null) {
+      especialidadeParaEnviar = especialidadeSelecionada;
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Especialidade inválida.',
+      });
+      this.isLoading = false;
+      return;
     }
 
     const plantao: PlantaoRequest = {
       hospitalId: parseInt(formValue.hospitalId, 10),
-      especialidade: finalEspecialidade,
+      especialidade: especialidadeParaEnviar,
       inicio: new Date(formValue.inicio).toISOString(),
       fim: new Date(formValue.fim).toISOString(),
       valor: parseFloat(formValue.valor),
@@ -222,7 +258,7 @@ export class CriarPlantaoComponent implements OnInit {
           detail: `Plantão ${this.isEditMode ? 'atualizado' : 'criado'} com sucesso!`,
         });
         this.plantaoForm.reset();
-        this.router.navigate(['/dashboard/plantoes']);
+        this.router.navigate(['/dashboard/plantoes/listar-plantoes']);
       },
       error: (error) => {
         console.error(`Erro ao ${this.isEditMode ? 'atualizar' : 'criar'} plantão:`, error);
@@ -241,6 +277,6 @@ export class CriarPlantaoComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/dashboard/plantoes']);
+    this.router.navigate(['/dashboard/plantoes/listar-plantoes']);
   }
 }

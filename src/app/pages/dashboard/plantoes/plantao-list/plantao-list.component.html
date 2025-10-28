@@ -35,7 +35,7 @@
 
             <ng-container matColumnDef="especialidade">
               <th mat-header-cell *matHeaderCellDef>Especialidade</th>
-              <td mat-cell *matCellDef="let plantao">{{ plantao.especialidade }}</td>
+              <td mat-cell *matCellDef="let plantao">{{ plantao.especialidadeNome || 'N/A' }}</td>
             </ng-container>
 
             <ng-container matColumnDef="inicio">
@@ -60,9 +60,10 @@
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let plantao">
-                <mat-chip-row [color]="getChipColor(plantao.status)" selected>
-                  {{ plantao.status }}
-                </mat-chip-row>
+                <p-tag
+                  [value]="formatStatus(plantao.status)"
+                  [severity]="getSeverity(plantao.status)"
+                ></p-tag>
               </td>
             </ng-container>
 
@@ -110,7 +111,7 @@
 
               <ng-container matColumnDef="especialidade">
                 <th mat-header-cell *matHeaderCellDef>Especialidade</th>
-                <td mat-cell *matCellDef="let plantao">{{ plantao.especialidade }}</td>
+                <td mat-cell *matCellDef="let plantao">{{ plantao.especialidadeNome || 'N/A' }}</td>
               </ng-container>
 
               <ng-container matColumnDef="inicio">
@@ -134,9 +135,10 @@
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let plantao">
-                  <mat-chip-row [color]="getChipColor(plantao.status)" selected>
-                    {{ plantao.status }}
-                  </mat-chip-row>
+                  <p-tag
+                    [value]="formatStatus(plantao.status)"
+                    [severity]="getSeverity(plantao.status)"
+                  ></p-tag>
                 </td>
               </ng-container>
 

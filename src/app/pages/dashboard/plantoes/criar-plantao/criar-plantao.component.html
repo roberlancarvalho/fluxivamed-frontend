@@ -6,7 +6,7 @@
     <div class="form-group">
       <label for="hospital">Hospital:</label>
       <select id="hospital" formControlName="hospitalId" class="form-control">
-        <option value="" disabled>Selecione um hospital</option>
+        <option [ngValue]="null" disabled>Selecione um hospital</option>
         <option *ngFor="let hospital of hospitais" [value]="hospital.id">
           {{ hospital.nome }}
         </option>
@@ -33,9 +33,12 @@
         [class.ng-invalid]="
           plantaoForm.get('especialidade')?.invalid && plantaoForm.get('especialidade')?.touched
         "
+        [compareWith]="compareEspecialidade"
       >
-        <option value="" disabled>Selecione uma especialidade</option>
-        <option *ngFor="let esp of especialidadesDisponiveis" [value]="esp">{{ esp }}</option>
+        <option [ngValue]="null" disabled>Selecione uma especialidade</option>
+        <option *ngFor="let esp of especialidadesDisponiveis" [ngValue]="esp">
+          {{ esp.nome }}
+        </option>
       </select>
       <div
         *ngIf="
@@ -72,7 +75,6 @@
         </span>
       </div>
     </div>
-
     <div class="form-group">
       <label for="inicio">Início do Plantão:</label>
       <input type="datetime-local" id="inicio" formControlName="inicio" class="form-control" />

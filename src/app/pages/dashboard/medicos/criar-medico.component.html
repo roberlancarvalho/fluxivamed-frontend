@@ -55,40 +55,16 @@
           medicoForm.get('especialidade')?.invalid && medicoForm.get('especialidade')?.touched
         "
       >
-        <option value="" disabled>Selecione uma especialidade</option>
-        <option *ngFor="let esp of especialidadesDisponiveis" [value]="esp">{{ esp }}</option>
+        <option [ngValue]="null" disabled>Selecione uma especialidade</option>
+        <option *ngFor="let esp of especialidadesDisponiveis" [ngValue]="esp">
+          {{ esp.nome }}
+        </option>
       </select>
       <div
         *ngIf="medicoForm.get('especialidade')?.invalid && medicoForm.get('especialidade')?.touched"
         class="error-message"
       >
         Especialidade é obrigatória.
-      </div>
-    </div>
-
-    <div class="form-group" *ngIf="showOtherEspecialidadeInput">
-      <label for="outraEspecialidade">Outra Especialidade:</label>
-      <input
-        type="text"
-        id="outraEspecialidade"
-        formControlName="outraEspecialidade"
-        class="form-control"
-        placeholder="Digite a especialidade"
-      />
-      <div
-        *ngIf="
-          medicoForm.get('outraEspecialidade')?.invalid &&
-          (medicoForm.get('outraEspecialidade')?.dirty ||
-            medicoForm.get('outraEspecialidade')?.touched)
-        "
-        class="error-message"
-      >
-        <span *ngIf="medicoForm.get('outraEspecialidade')?.errors?.['required']">
-          A especialidade é obrigatória.
-        </span>
-        <span *ngIf="medicoForm.get('outraEspecialidade')?.errors?.['pattern']">
-          A especialidade deve conter apenas letras e espaços.
-        </span>
       </div>
     </div>
 

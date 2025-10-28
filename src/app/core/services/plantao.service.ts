@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
+import { Especialidade } from './especialidade.service';
 
 export enum StatusPlantao {
   DISPONIVEL = 'DISPONIVEL',
@@ -22,28 +23,39 @@ export interface Medico {
   id: number;
   crm: string;
   user: User;
+  especialidade?: Especialidade;
 }
 
 export interface PlantaoRequest {
   hospitalId: number;
-  especialidade: string;
+  especialidade: Especialidade;
   inicio: string;
   fim: string;
   valor: number;
+}
+
+export interface MedicoResponseDTO {
+  id: number | null;
+  crm: string | null;
+  nomeCompleto: string | null;
+  email: string | null;
+  telefone: string | null;
+  especialidadeNome: string | null;
 }
 
 export interface PlantaoResponse {
   id: number;
   hospitalId: number;
-  hospitalNome: string;
+  nomeHospital: string;
   medicoId: number | null;
-  medicoNome: string | null;
-  especialidade: string;
+  nomeMedico: string | null;
+  especialidadeId: number | null;
+  especialidadeNome: string | null;
   inicio: string;
   fim: string;
   valor: number;
   status: StatusPlantao;
-  candidatos?: Medico[];
+  candidatos?: MedicoResponseDTO[];
 }
 
 export interface PageResponse<T> {
@@ -58,6 +70,12 @@ export interface PageResponse<T> {
   first: boolean;
   numberOfElements: number;
   empty: boolean;
+}
+
+export interface FiltrosBuscaPlantoes {
+  hospitalId?: number;
+  data?: string;
+  status?: StatusPlantao[];
 }
 
 @Injectable({
@@ -85,20 +103,22 @@ export class PlantaoService {
   }
 
   buscarPlantoesDisponiveis(
-    filtros: any,
+    filtros: FiltrosBuscaPlantoes,
     page: number,
     size: number
   ): Observable<PageResponse<PlantaoResponse>> {
     let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
-    if (filtros.hospitalId) {
-      params = params.append('hospitalId', filtros.hospitalId);
+    if (filtros.hospitalId != null) {
+      params = params.append('hospitalId', filtros.hospitalId.toString());
     }
     if (filtros.data) {
       params = params.append('data', filtros.data);
     }
-    if (filtros.especialidade) {
-      params = params.append('especialidade', filtros.especialidade);
+    if (filtros.status && filtros.status.length > 0) {
+      filtros.status.forEach((s) => {
+        params = params.append('status', s);
+      });
     }
 
     return this.http.get<PageResponse<PlantaoResponse>>(`${this.apiUrl}/disponiveis`, { params });
@@ -109,7 +129,7 @@ export class PlantaoService {
   }
 
   aprovarCandidatura(plantaoId: number, medicoId: number): Observable<PlantaoResponse> {
-    return this.http.post<PlantaoResponse>(`${this.apiUrl}/${plantaoId}/aprovar/${medicoId}`, {});
+    return this.http.put<PlantaoResponse>(`${this.apiUrl}/${plantaoId}/aprovar/${medicoId}`, {});
   }
 
   excluirPlantao(id: number): Observable<void> {

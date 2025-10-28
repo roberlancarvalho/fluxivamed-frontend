@@ -1,15 +1,57 @@
+@import "primeicons/primeicons.css";
+
+:root {
+  --cor-primaria: #3b82f6; /* Azul principal */
+  --cor-primaria-clara: #eff6ff; /* Fundo azul bem claro */
+  --cor-texto: #374151; /* Preto suave (em vez de #000) */
+  --cor-texto-secundario: #6b7280; /* Cinza para subtextos */
+  --cor-fundo-pagina: #f9fafb; /* Fundo da página (cinza muito claro) */
+  --cor-fundo-card: #ffffff; /* Fundo de cards, tabelas, etc. */
+  --cor-borda: #e5e7eb; /* Cor de bordas e divisores */
+  --cor-aviso: #ef4444; /* Vermelho para erros/delete */
+  --cor-sucesso: #10b981; /* Verde para sucesso */
+  --cor-alerta: #f59e0b; /* Amarelo/Laranja para 'Aguardando' */
+
+  /* Layout e Design */
+  --raio-borda: 8px;
+  --sombra-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --espacamento-sm: 0.5rem; // 8px
+  --espacamento-md: 1rem; // 16px
+  --espacamento-lg: 1.5rem; // 24px
+}
+
+/* Base e Tipografia */
 html,
 body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
+  background-color: var(--cor-fundo-pagina);
+  color: var(--cor-texto);
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Links Globais */
+a {
+  color: var(--cor-primaria);
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

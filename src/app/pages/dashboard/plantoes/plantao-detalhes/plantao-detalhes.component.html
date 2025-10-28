@@ -5,17 +5,20 @@
   <div *ngIf="plantao" class="detalhes-card">
     <div class="header">
       <h3>Plantão #{{ plantao.id }}</h3>
-      <p-tag [value]="plantao.status" [severity]="getSeverity(plantao.status)"></p-tag>
+      <p-tag
+        [value]="formatStatus(plantao.status!)"
+        [severity]="getSeverity(plantao.status!)"
+      ></p-tag>
     </div>
 
     <div class="info-group">
       <div class="info-item">
         <strong>Hospital:</strong>
-        <span>{{ plantao.hospitalNome }}</span>
+        <span>{{ plantao.nomeHospital }}</span>
       </div>
       <div class="info-item">
         <strong>Especialidade:</strong>
-        <span>{{ plantao.especialidade }}</span>
+        <span>{{ plantao.especialidadeNome }}</span>
       </div>
       <div class="info-item">
         <strong>Início:</strong>
@@ -29,9 +32,9 @@
         <strong>Valor:</strong>
         <span>{{ plantao.valor | currency : 'BRL' : 'symbol' : '1.2-2' : 'pt' }}</span>
       </div>
-      <div class="info-item" *ngIf="plantao.medicoNome">
+      <div class="info-item" *ngIf="plantao.candidatos && plantao.candidatos.length > 0">
         <strong>Médico Alocado:</strong>
-        <span>{{ plantao.medicoNome }}</span>
+        <span>{{ plantao.candidatos[0].nomeCompleto }}</span>
       </div>
     </div>
 
@@ -48,8 +51,8 @@
           </ng-template>
           <ng-template pTemplate="body" let-medico>
             <tr>
-              <td>{{ medico.user.fullName }}</td>
-              <td>{{ medico.user.email }}</td>
+              <td>{{ medico.nomeCompleto }}</td>
+              <td>{{ medico.email }}</td>
               <td>
                 <button
                   pButton
@@ -74,7 +77,7 @@
         "
         class="no-candidatos"
       >
-        <p>Este plantão não possui candidatos no momento, mas está aguardando aprovação.</p>
+        <p>Este plantão não possui candidatos no momento.</p>
       </div>
 
       <div *ngIf="plantao.status === 'DISPONIVEL'" class="no-candidatos">
@@ -96,7 +99,7 @@
         label="Editar Plantão"
         icon="pi pi-pencil"
         class="p-button-info"
-        (click)="editarPlantao(plantao.id)"
+        (click)="editarPlantao(plantao.id!)"
         *ngIf="authService.hasRole('HOSPITAL_ADMIN') && plantao.status === 'DISPONIVEL'"
       ></button>
       <button
@@ -105,7 +108,7 @@
         label="Candidatar-se"
         icon="pi pi-briefcase"
         class="p-button-primary"
-        (click)="candidatar(plantao.id)"
+        (click)="candidatar(plantao.id!)"
         *ngIf="authService.hasRole('MEDICO') && plantao.status === 'DISPONIVEL'"
       ></button>
     </div>

@@ -99,3 +99,42 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.status-chip {
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-weight: 600;
+  display: inline-block;
+  font-size: 12px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  line-height: 1.5;
+
+  // Cor padrão (vinda do .ts)
+  &.status-default {
+    background-color: #eeeeee;
+    color: #424242;
+    border-color: #bdbdbd;
+  }
+
+  // Usa a variável --cor-primaria
+  &.primary {
+    background-color: var(--cor-primaria-clara);
+    color: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+  }
+
+  // Usa a variável --cor-alerta
+  &.accent {
+    background-color: #fef9c3; // Amarelo bem claro
+    color: var(--cor-alerta);
+    border-color: var(--cor-alerta);
+  }
+
+  // Usa a variável --cor-aviso
+  &.warn {
+    background-color: #fee2e2; // Vermelho bem claro
+    color: var(--cor-aviso);
+    border-color: var(--cor-aviso);
+  }
+}

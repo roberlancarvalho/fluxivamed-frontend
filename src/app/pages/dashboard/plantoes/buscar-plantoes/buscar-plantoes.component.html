@@ -57,7 +57,7 @@
 
           <ng-container matColumnDef="especialidade">
             <th mat-header-cell *matHeaderCellDef>Especialidade</th>
-            <td mat-cell *matCellDef="let plantao">{{ plantao.especialidade }}</td>
+            <td mat-cell *matCellDef="let plantao">{{ plantao.especialidadeNome || 'N/A' }}</td>
           </ng-container>
 
           <ng-container matColumnDef="inicio">

@@ -2,20 +2,27 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Especialidade } from './especialidade.service';
+
+export interface User {
+  id: number;
+  email: string;
+  fullName: string;
+}
 
 export interface MedicoRequest {
   email: string;
   password?: string;
   nomeCompleto: string;
   crm: string;
-  especialidade: string;
+  especialidade: Especialidade;
 }
 
 export interface MedicoResponseDTO {
   id: number;
   nomeCompleto: string;
   crm: string;
-  especialidade: string;
+  especialidade: Especialidade;
   email: string;
 }
 
@@ -23,7 +30,7 @@ export interface MedicoDisponivelDTO {
   id: number;
   nomeCompleto: string;
   crm: string;
-  especialidade: string;
+  especialidade: Especialidade;
 }
 
 export interface MedicoBuscaDisponibilidadeParams {

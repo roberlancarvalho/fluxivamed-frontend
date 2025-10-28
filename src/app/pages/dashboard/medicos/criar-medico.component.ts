@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,12 +7,13 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { catchError, finalize, of, tap } from 'rxjs';
-import { EspecialidadeService } from '../../../core/services/especialidade.service';
+import { Especialidade, EspecialidadeService } from '../../../core/services/especialidade.service'; // <<< Importar objeto
 import {
   MedicoRequest,
   MedicoResponseDTO,
   MedicoService,
 } from '../../../core/services/medico.service';
+// import { AuthService, User } from '../../../core/services/auth.service'; // Ajuste se necessário
 
 @Component({
   selector: 'app-criar-medico',
@@ -20,15 +21,16 @@ import {
   imports: [CommonModule, ReactiveFormsModule, ToastModule, ButtonModule, ProgressSpinnerModule],
   templateUrl: './criar-medico.component.html',
   styleUrl: './criar-medico.component.scss',
-  providers: [MessageService],
+  providers: [MessageService], // Removido DatePipe se não usado
 })
 export class CriarMedicoComponent implements OnInit {
   medicoForm!: FormGroup;
   isLoading: boolean = false;
-  especialidadesDisponiveis: string[] = [];
-  showOtherEspecialidadeInput: boolean = false;
+  especialidadesDisponiveis: Especialidade[] = []; // <<< ALTERADO para Especialidade[]
+  // showOtherEspecialidadeInput: boolean = false; // Removido
   medicoId: number | null = null;
   isEditMode: boolean = false;
+  // currentUser: User | null = null; // Removido
 
   constructor(
     private fb: FormBuilder,
@@ -37,7 +39,8 @@ export class CriarMedicoComponent implements OnInit {
     private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) // private authService: AuthService // Removido
+  {}
 
   ngOnInit(): void {
     this.medicoId = this.route.snapshot.params['id']
@@ -46,43 +49,41 @@ export class CriarMedicoComponent implements OnInit {
     this.isEditMode = !!this.medicoId;
 
     this.initForm();
-    this.loadEspecialidades(); // Carrega especialidades antes de popular o formulário, se em edição
+    this.loadEspecialidades();
 
-    this.medicoForm.get('especialidade')?.valueChanges.subscribe((value) => {
-      this.showOtherEspecialidadeInput = value === 'Outra';
-      if (!this.showOtherEspecialidadeInput) {
-        this.medicoForm.get('outraEspecialidade')?.setValue('');
-      }
-    });
+    // Remover lógica de 'Outra'
+    // this.medicoForm.get('especialidade')?.valueChanges.subscribe((value) => { ... });
   }
 
   initForm(): void {
     this.medicoForm = this.fb.group({
       nomeCompleto: ['', Validators.required],
       crm: ['', Validators.required],
-      especialidade: ['', Validators.required],
-      outraEspecialidade: [''],
+      especialidade: [null as Especialidade | null, Validators.required], // <<< ALTERADO para objeto ou null
+      // outraEspecialidade: [''], // Removido
       email: ['', [Validators.required, Validators.email]],
-      password: ['', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]], // Senha só é obrigatória na criação
+      password: ['', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]],
     });
   }
 
   loadEspecialidades(): void {
     this.isLoading = true;
     this.especialidadeService
-      .getEspecialidades()
+      .getEspecialidades() // <<< CORRETO: Chama o método que retorna Observable<Especialidade[]>
       .pipe(
         catchError((err) => {
           console.error('Erro ao carregar especialidades:', err);
           this.messageService.add({
             severity: 'error',
             summary: 'Erro',
-            detail: 'Não foi possível carregar as especialidades. Usando lista fallback.',
+            detail: 'Não foi possível carregar as especialidades.',
           });
-          return of(['Clínico Geral', 'Pediatra', 'Cardiologista']);
+          return of([]); // <<< CORRETO: Retorna array vazio de Especialidade
         }),
-        tap((data) => {
-          this.especialidadesDisponiveis = [...data, 'Outra'];
+        tap((data: Especialidade[]) => {
+          // <<< CORRETO: data é Especialidade[]
+          console.log('Especialidades carregadas (Medico):', data); // Log para depurar
+          this.especialidadesDisponiveis = data; // <<< CORRETO: Atribui Especialidade[]
         }),
         finalize(() => {
           this.isLoading = false;
@@ -98,7 +99,7 @@ export class CriarMedicoComponent implements OnInit {
   loadMedicoParaEdicao(id: number): void {
     this.isLoading = true;
     this.medicoService
-      .getMedicoById(id)
+      .getMedicoById(id) // Retorna MedicoResponseDTO com objeto Especialidade
       .pipe(
         catchError((error) => {
           console.error('Erro ao carregar médico para edição:', error);
@@ -107,42 +108,31 @@ export class CriarMedicoComponent implements OnInit {
             summary: 'Erro',
             detail: error.error?.message || 'Não foi possível carregar o médico para edição.',
           });
-          this.router.navigate(['/dashboard/medicos']); // Redireciona para a lista de médicos
+          this.router.navigate(['/dashboard/medicos']);
           return of(null);
         }),
         finalize(() => (this.isLoading = false))
       )
       .subscribe((medico) => {
         if (medico) {
-          let especialidadeSelecionada = medico.especialidade;
-          let outraEspecialidadeValor = '';
-
-          if (!this.especialidadesDisponiveis.includes(medico.especialidade)) {
-            especialidadeSelecionada = 'Outra';
-            outraEspecialidadeValor = medico.especialidade;
-          }
+          // Encontra o objeto Especialidade pelo ID retornado pela API de Medico
+          const especialidadeObj = this.especialidadesDisponiveis.find(
+            (esp) => esp.id === medico.especialidade.id // <<< CORRETO: Compara por ID
+          );
 
           this.medicoForm.patchValue({
             nomeCompleto: medico.nomeCompleto,
             crm: medico.crm,
-            especialidade: especialidadeSelecionada,
-            outraEspecialidade: outraEspecialidadeValor,
+            especialidade: especialidadeObj, // <<< CORRETO: Seta o objeto
             email: medico.email,
-            // Senha não é populada na edição por segurança
           });
         }
       });
   }
 
   onSubmit(): void {
-    if (this.showOtherEspecialidadeInput) {
-      this.medicoForm
-        .get('outraEspecialidade')
-        ?.setValidators([Validators.required, Validators.pattern(/^[a-zA-Z\s\-]+$/)]);
-    } else {
-      this.medicoForm.get('outraEspecialidade')?.clearValidators();
-    }
-    this.medicoForm.get('outraEspecialidade')?.updateValueAndValidity();
+    // Remover lógica de 'Outra'
+    // if (this.showOtherEspecialidadeInput) { ... }
 
     if (this.medicoForm.invalid) {
       this.medicoForm.markAllAsTouched();
@@ -157,17 +147,25 @@ export class CriarMedicoComponent implements OnInit {
     this.isLoading = true;
     const formValue = this.medicoForm.value;
 
-    let finalEspecialidade = formValue.especialidade;
-    if (finalEspecialidade === 'Outra') {
-      finalEspecialidade = formValue.outraEspecialidade;
+    const especialidadeSelecionada: Especialidade = formValue.especialidade; // <<< CORRETO: Objeto
+
+    if (!especialidadeSelecionada || !especialidadeSelecionada.id) {
+      // <<< Verifica ID
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Especialidade inválida selecionada.',
+      });
+      this.isLoading = false;
+      return;
     }
 
     const medicoRequest: MedicoRequest = {
       nomeCompleto: formValue.nomeCompleto,
       crm: formValue.crm,
-      especialidade: finalEspecialidade,
+      especialidade: especialidadeSelecionada, // <<< CORRETO: Envia o objeto
       email: formValue.email,
-      password: formValue.password, // Só será enviado na criação
+      password: formValue.password, // Incluir senha se presente
     };
 
     const operationObservable =
@@ -183,7 +181,7 @@ export class CriarMedicoComponent implements OnInit {
           detail: `Médico ${this.isEditMode ? 'atualizado' : 'cadastrado'} com sucesso!`,
         });
         this.medicoForm.reset();
-        this.router.navigate(['/dashboard/medicos']); // Redireciona para a lista de médicos
+        this.router.navigate(['/dashboard/medicos']);
       },
       error: (error) => {
         console.error(`Erro ao ${this.isEditMode ? 'atualizar' : 'cadastrar'} médico:`, error);
@@ -202,6 +200,6 @@ export class CriarMedicoComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/dashboard/medicos']); // Redireciona para a lista de médicos
+    this.router.navigate(['/dashboard/medicos']);
   }
 }

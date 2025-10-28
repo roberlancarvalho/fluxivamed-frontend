@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,12 +9,16 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { catchError, finalize, of } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
-import { PlantaoResponse, PlantaoService } from '../../../../core/services/plantao.service';
+import {
+  PlantaoResponse,
+  PlantaoService,
+  StatusPlantao,
+} from '../../../../core/services/plantao.service';
 
 @Component({
   selector: 'app-plantao-detalhes',
   standalone: true,
-  imports: [CommonModule, ToastModule, ButtonModule, TagModule, TableModule],
+  imports: [CommonModule, ToastModule, ButtonModule, TagModule, TableModule, DatePipe],
   templateUrl: './plantao-detalhes.component.html',
   styleUrl: './plantao-detalhes.component.scss',
   providers: [MessageService],
@@ -33,16 +37,27 @@ export class PlantaoDetalhesComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
-      const plantaoId = params.get('id');
-      if (plantaoId) {
-        this.loadPlantaoDetalhes(Number(plantaoId));
+      const plantaoIdStr = params.get('id');
+      if (plantaoIdStr) {
+        const plantaoId = Number(plantaoIdStr);
+        if (!isNaN(plantaoId)) {
+          this.loadPlantaoDetalhes(plantaoId);
+        } else {
+          console.error('ID do plantão inválido (NaN):', plantaoIdStr);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'ID do plantão inválido.',
+          });
+          this.router.navigate(['/dashboard/plantoes/listar-plantoes']);
+        }
       } else {
         this.messageService.add({
           severity: 'error',
           summary: 'Erro',
           detail: 'ID do plantão não fornecido.',
         });
-        this.router.navigate(['/dashboard/plantoes']);
+        this.router.navigate(['/dashboard/plantoes/listar-plantoes']);
       }
     });
   }
@@ -60,7 +75,7 @@ export class PlantaoDetalhesComponent implements OnInit {
             summary: 'Erro',
             detail: error.error?.message || 'Não foi possível carregar os detalhes do plantão.',
           });
-          this.router.navigate(['/dashboard/plantoes']);
+          this.router.navigate(['/dashboard/plantoes/listar-plantoes']);
           return of(undefined);
         })
       )
@@ -68,31 +83,50 @@ export class PlantaoDetalhesComponent implements OnInit {
         this.plantao = data;
         if (this.plantao?.candidatos) {
           this.plantao.candidatos.sort((a, b) =>
-            (a.user.fullName || '').localeCompare(b.user.fullName || '')
+            (a.nomeCompleto || '').localeCompare(b.nomeCompleto || '')
           );
         }
       });
   }
 
-  getSeverity(status: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' {
+  getSeverity(
+    status: string | StatusPlantao
+  ): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' {
     switch (status) {
-      case 'DISPONIVEL':
+      case StatusPlantao.DISPONIVEL:
         return 'success';
-      case 'AGUARDANDO_APROVACAO':
+      case StatusPlantao.AGUARDANDO_APROVACAO:
         return 'warn';
-      case 'PREENCHIDO':
+      case StatusPlantao.PREENCHIDO:
         return 'info';
-      case 'REALIZADO':
+      case StatusPlantao.REALIZADO:
         return 'secondary';
-      case 'CANCELADO':
+      case StatusPlantao.CANCELADO:
         return 'danger';
       default:
         return 'info';
     }
   }
 
-  aprovarCandidatura(medicoId: number): void {
-    if (!this.plantao?.id) return;
+  formatStatus(status: string | StatusPlantao): string {
+    switch (status) {
+      case StatusPlantao.DISPONIVEL:
+        return 'Disponível';
+      case StatusPlantao.AGUARDANDO_APROVACAO:
+        return 'Aguardando Aprovação';
+      case StatusPlantao.PREENCHIDO:
+        return 'Preenchido';
+      case StatusPlantao.REALIZADO:
+        return 'Realizado';
+      case StatusPlantao.CANCELADO:
+        return 'Cancelado';
+      default:
+        return status ? status.toString() : 'Desconhecido';
+    }
+  }
+
+  aprovarCandidatura(medicoId: number | null): void {
+    if (!this.plantao?.id || medicoId === null) return;
     this.isLoading = true;
     this.plantaoService
       .aprovarCandidatura(this.plantao.id, medicoId)
@@ -143,7 +177,7 @@ export class PlantaoDetalhesComponent implements OnInit {
   }
 
   voltar(): void {
-    this.router.navigate(['/dashboard/plantoes']);
+    this.router.navigate(['/dashboard/plantoes/listar-plantoes']);
   }
 
   editarPlantao(plantaoId: number): void {

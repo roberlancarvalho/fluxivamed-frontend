@@ -3,22 +3,25 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
+// import { MatChipsModule } from '@angular/material/chips'; // <<< REMOVER
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { Observable, Subscription, of } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
 import {
+  FiltrosBuscaPlantoes,
   PageResponse,
   PlantaoResponse,
   PlantaoService,
+  StatusPlantao,
 } from '../../../../core/services/plantao.service';
+import { TagModule } from 'primeng/tag'; // <<< ADICIONAR IMPORT DO PRIMENG
 
 @Component({
   selector: 'app-plantao-list',
@@ -31,7 +34,8 @@ import {
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatChipsModule,
+    // MatChipsModule, // <<< REMOVER
+    TagModule, // <<< ADICIONAR
     MatTooltipModule,
     MatCardModule,
   ],
@@ -102,7 +106,8 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
     if (this.isMedico) {
       observableSource = this.plantaoService.getMeusPlantoes();
     } else if (this.isAdminOrEscalista) {
-      observableSource = this.plantaoService.buscarPlantoesDisponiveis({}, page, size);
+      const filtros: FiltrosBuscaPlantoes = {};
+      observableSource = this.plantaoService.buscarPlantoesDisponiveis(filtros, page, size);
     } else {
       this.errorMessage = 'Usuário sem permissão para visualizar plantões.';
       this.isLoading = false;
@@ -122,21 +127,39 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
             duration: 5000,
             panelClass: ['snackbar-error'],
           });
-          return of(this.isMedico ? [] : null);
+          return of(this.isMedico ? [] : this.createEmptyPageResponse());
         })
       )
       .subscribe((dados) => {
-
         console.log('DADOS DA API:', dados);
-
         if (dados) {
           if (this.isPage(dados)) {
             this.plantoesPaginados = dados;
           } else {
             this.meusPlantoes = dados as PlantaoResponse[];
           }
+        } else {
+          if (!this.isMedico) {
+            this.plantoesPaginados = this.createEmptyPageResponse();
+          }
         }
       });
+  }
+
+  private createEmptyPageResponse(): PageResponse<PlantaoResponse> {
+    return {
+      content: [],
+      pageable: { pageNumber: 0, pageSize: 10 },
+      last: true,
+      totalElements: 0,
+      totalPages: 0,
+      size: 10,
+      number: 0,
+      sort: {},
+      first: true,
+      numberOfElements: 0,
+      empty: true,
+    };
   }
 
   editarPlantao(id: number | undefined): void {
@@ -177,7 +200,9 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
               duration: 3000,
               panelClass: ['snackbar-success'],
             });
-            this.carregarPlantoes();
+            const currentPage = this.plantoesPaginados?.number ?? 0;
+            const currentSize = this.plantoesPaginados?.size ?? 10;
+            this.carregarPlantoes(currentPage, currentSize);
           },
           error: (err: HttpErrorResponse) => {
             console.error('Erro ao excluir plantão:', err);
@@ -192,31 +217,51 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
   }
 
   isPage(
-    data: PageResponse<PlantaoResponse> | PlantaoResponse[]
+    data: PageResponse<PlantaoResponse> | PlantaoResponse[] | null
   ): data is PageResponse<PlantaoResponse> {
-    return (data as PageResponse<PlantaoResponse>)?.content !== undefined;
+    return !!data && (data as PageResponse<PlantaoResponse>)?.content !== undefined;
   }
 
-  onPageChange(event: any): void {
+  onPageChange(event: PageEvent): void {
     if (this.isAdminOrEscalista) {
       this.carregarPlantoes(event.pageIndex, event.pageSize);
     }
   }
 
-  getChipColor(status: string): 'primary' | 'accent' | 'warn' | '' {
+  // <<< MÉTODO RENOMEADO/AJUSTADO para getSeverity (padrão PrimeNG) >>>
+  getSeverity(
+    status: string | StatusPlantao
+  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     switch (status) {
-      case 'DISPONIVEL':
-        return 'primary';
-      case 'AGUARDANDO_APROVACAO':
-        return 'accent';
-      case 'PREENCHIDO':
-        return 'warn';
-      case 'REALIZADO':
-        return '';
-      case 'CANCELADO':
-        return '';
+      case StatusPlantao.DISPONIVEL:
+        return 'success'; // Verde (padrão Lara Blue)
+      case StatusPlantao.AGUARDANDO_APROVACAO:
+        return 'warn'; // Laranja/Amarelo
+      case StatusPlantao.PREENCHIDO:
+        return 'info'; // Azul (diferente do Disponível)
+      case StatusPlantao.REALIZADO:
+        return 'secondary'; // Cinza
+      case StatusPlantao.CANCELADO:
+        return 'danger'; // Vermelho
       default:
-        return '';
+        return 'info'; // Padrão
+    }
+  }
+
+  formatStatus(status: string | StatusPlantao): string {
+    switch (status) {
+      case StatusPlantao.DISPONIVEL:
+        return 'Disponível';
+      case StatusPlantao.AGUARDANDO_APROVACAO:
+        return 'Aguardando Aprovação';
+      case StatusPlantao.PREENCHIDO:
+        return 'Preenchido';
+      case StatusPlantao.REALIZADO:
+        return 'Realizado';
+      case StatusPlantao.CANCELADO:
+        return 'Cancelado';
+      default:
+        return status ? status.toString() : 'Desconhecido';
     }
   }
 }

@@ -228,7 +228,6 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
     }
   }
 
-  // <<< MÉTODO RENOMEADO/AJUSTADO para getSeverity (padrão PrimeNG) >>>
   getSeverity(
     status: string | StatusPlantao
   ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
@@ -253,7 +252,7 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
       case StatusPlantao.DISPONIVEL:
         return 'Disponível';
       case StatusPlantao.AGUARDANDO_APROVACAO:
-        return 'Aguardando Aprovação';
+        return 'Para Aprovar';
       case StatusPlantao.PREENCHIDO:
         return 'Preenchido';
       case StatusPlantao.REALIZADO:

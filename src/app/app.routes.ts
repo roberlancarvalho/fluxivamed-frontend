@@ -10,6 +10,7 @@ import { BuscarPlantoesComponent } from './pages/dashboard/plantoes/buscar-plant
 import { CriarPlantaoComponent } from './pages/dashboard/plantoes/criar-plantao/criar-plantao.component';
 import { PlantaoDetalhesComponent } from './pages/dashboard/plantoes/plantao-detalhes/plantao-detalhes.component';
 import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list/plantao-list.component';
+import { MedicoListComponent } from './pages/dashboard/medicos/medico-list/medico-list.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
@@ -71,6 +72,13 @@ export const routes: Routes = [
         title: 'FluxivaMed - Detalhes do Plantão',
         canActivate: [authGuard],
         data: { roles: ['ADMIN', 'HOSPITAL_ADMIN', 'ESCALISTA', 'MEDICO'] },
+      },
+      {
+        path: 'medicos/medicos',
+        component: MedicoListComponent,
+        title: 'FluxivaMed - Listar Médicos',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN'] },
       },
       {
         path: 'medicos/criar',

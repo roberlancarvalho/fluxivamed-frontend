@@ -54,6 +54,7 @@
         [class.ng-invalid]="
           medicoForm.get('especialidade')?.invalid && medicoForm.get('especialidade')?.touched
         "
+        [compareWith]="compareEspecialidade"
       >
         <option [ngValue]="null" disabled>Selecione uma especialidade</option>
         <option *ngFor="let esp of especialidadesDisponiveis" [ngValue]="esp">

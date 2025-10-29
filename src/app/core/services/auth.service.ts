@@ -15,6 +15,7 @@ interface JwtPayload {
   exp: number;
   iat: number;
   fullName: string;
+  userId?: number;
 }
 
 @Injectable({

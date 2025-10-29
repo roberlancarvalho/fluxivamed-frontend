@@ -4,12 +4,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Especialidade } from './especialidade.service';
 
-export interface User {
-  id: number;
-  email: string;
-  fullName: string;
-}
-
 export interface MedicoRequest {
   email: string;
   password?: string;
@@ -19,11 +13,13 @@ export interface MedicoRequest {
 }
 
 export interface MedicoResponseDTO {
-  id: number;
-  nomeCompleto: string;
-  crm: string;
-  especialidade: Especialidade;
-  email: string;
+  id: number | null;
+  nomeCompleto: string | null;
+  crm: string | null;
+  especialidadeId: number | null;
+  especialidadeNome: string | null;
+  email: string | null;
+  telefone: string | null;
 }
 
 export interface MedicoDisponivelDTO {
@@ -56,11 +52,12 @@ export interface DefinirDisponibilidadeRequest {
 })
 export class MedicoService {
   private apiUrl = `${environment.apiUrl}/api/v1/medicos`;
+  private authApiUrl = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) {}
 
-  criarMedico(medico: MedicoRequest): Observable<MedicoResponseDTO> {
-    return this.http.post<MedicoResponseDTO>(`${this.apiUrl}/register`, medico);
+  criarMedico(medico: MedicoRequest): Observable<any> {
+    return this.http.post<any>(`${this.authApiUrl}/register`, medico);
   }
 
   getMedicoById(id: number): Observable<MedicoResponseDTO> {
@@ -97,7 +94,6 @@ export class MedicoService {
     const periodosParaEnviar = periodos.map((p) => ({ inicio: p.inicio, fim: p.fim }));
     const request: DefinirDisponibilidadeRequest = { periodos: periodosParaEnviar };
     const urlCompleta = `${this.apiUrl}/minha-disponibilidade`;
-    console.log('Enviando POST para:', urlCompleta, 'com payload:', request);
     return this.http.post<void>(urlCompleta, request);
   }
 

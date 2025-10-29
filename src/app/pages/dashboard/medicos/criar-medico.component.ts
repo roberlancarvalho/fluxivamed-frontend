@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,13 +7,11 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { catchError, finalize, of, tap } from 'rxjs';
-import { Especialidade, EspecialidadeService } from '../../../core/services/especialidade.service'; // <<< Importar objeto
+import { Especialidade, EspecialidadeService } from '../../../core/services/especialidade.service';
 import {
   MedicoRequest,
-  MedicoResponseDTO,
-  MedicoService,
+  MedicoService
 } from '../../../core/services/medico.service';
-// import { AuthService, User } from '../../../core/services/auth.service'; // Ajuste se necessário
 
 @Component({
   selector: 'app-criar-medico',
@@ -21,16 +19,14 @@ import {
   imports: [CommonModule, ReactiveFormsModule, ToastModule, ButtonModule, ProgressSpinnerModule],
   templateUrl: './criar-medico.component.html',
   styleUrl: './criar-medico.component.scss',
-  providers: [MessageService], // Removido DatePipe se não usado
+  providers: [MessageService],
 })
 export class CriarMedicoComponent implements OnInit {
   medicoForm!: FormGroup;
   isLoading: boolean = false;
-  especialidadesDisponiveis: Especialidade[] = []; // <<< ALTERADO para Especialidade[]
-  // showOtherEspecialidadeInput: boolean = false; // Removido
+  especialidadesDisponiveis: Especialidade[] = [];
   medicoId: number | null = null;
   isEditMode: boolean = false;
-  // currentUser: User | null = null; // Removido
 
   constructor(
     private fb: FormBuilder,
@@ -39,8 +35,7 @@ export class CriarMedicoComponent implements OnInit {
     private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute
-  ) // private authService: AuthService // Removido
-  {}
+  ) {}
 
   ngOnInit(): void {
     this.medicoId = this.route.snapshot.params['id']
@@ -50,17 +45,13 @@ export class CriarMedicoComponent implements OnInit {
 
     this.initForm();
     this.loadEspecialidades();
-
-    // Remover lógica de 'Outra'
-    // this.medicoForm.get('especialidade')?.valueChanges.subscribe((value) => { ... });
   }
 
   initForm(): void {
     this.medicoForm = this.fb.group({
       nomeCompleto: ['', Validators.required],
       crm: ['', Validators.required],
-      especialidade: [null as Especialidade | null, Validators.required], // <<< ALTERADO para objeto ou null
-      // outraEspecialidade: [''], // Removido
+      especialidade: [null as Especialidade | null, Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]],
     });
@@ -69,7 +60,7 @@ export class CriarMedicoComponent implements OnInit {
   loadEspecialidades(): void {
     this.isLoading = true;
     this.especialidadeService
-      .getEspecialidades() // <<< CORRETO: Chama o método que retorna Observable<Especialidade[]>
+      .getEspecialidades()
       .pipe(
         catchError((err) => {
           console.error('Erro ao carregar especialidades:', err);
@@ -78,12 +69,11 @@ export class CriarMedicoComponent implements OnInit {
             summary: 'Erro',
             detail: 'Não foi possível carregar as especialidades.',
           });
-          return of([]); // <<< CORRETO: Retorna array vazio de Especialidade
+          return of([]);
         }),
         tap((data: Especialidade[]) => {
-          // <<< CORRETO: data é Especialidade[]
-          console.log('Especialidades carregadas (Medico):', data); // Log para depurar
-          this.especialidadesDisponiveis = data; // <<< CORRETO: Atribui Especialidade[]
+          console.log('Especialidades carregadas (Medico):', data);
+          this.especialidadesDisponiveis = data;
         }),
         finalize(() => {
           this.isLoading = false;
@@ -99,7 +89,7 @@ export class CriarMedicoComponent implements OnInit {
   loadMedicoParaEdicao(id: number): void {
     this.isLoading = true;
     this.medicoService
-      .getMedicoById(id) // Retorna MedicoResponseDTO com objeto Especialidade
+      .getMedicoById(id)
       .pipe(
         catchError((error) => {
           console.error('Erro ao carregar médico para edição:', error);
@@ -115,25 +105,25 @@ export class CriarMedicoComponent implements OnInit {
       )
       .subscribe((medico) => {
         if (medico) {
-          // Encontra o objeto Especialidade pelo ID retornado pela API de Medico
           const especialidadeObj = this.especialidadesDisponiveis.find(
-            (esp) => esp.id === medico.especialidade.id // <<< CORRETO: Compara por ID
+            (esp) => esp.id === medico.especialidadeId
           );
 
           this.medicoForm.patchValue({
             nomeCompleto: medico.nomeCompleto,
             crm: medico.crm,
-            especialidade: especialidadeObj, // <<< CORRETO: Seta o objeto
+            especialidade: especialidadeObj,
             email: medico.email,
           });
         }
       });
   }
 
-  onSubmit(): void {
-    // Remover lógica de 'Outra'
-    // if (this.showOtherEspecialidadeInput) { ... }
+  compareEspecialidade(o1: Especialidade | null, o2: Especialidade | null): boolean {
+    return o1?.id === o2?.id;
+  }
 
+  onSubmit(): void {
     if (this.medicoForm.invalid) {
       this.medicoForm.markAllAsTouched();
       this.messageService.add({
@@ -147,10 +137,9 @@ export class CriarMedicoComponent implements OnInit {
     this.isLoading = true;
     const formValue = this.medicoForm.value;
 
-    const especialidadeSelecionada: Especialidade = formValue.especialidade; // <<< CORRETO: Objeto
+    const especialidadeSelecionada: Especialidade = formValue.especialidade;
 
     if (!especialidadeSelecionada || !especialidadeSelecionada.id) {
-      // <<< Verifica ID
       this.messageService.add({
         severity: 'error',
         summary: 'Erro',
@@ -163,9 +152,9 @@ export class CriarMedicoComponent implements OnInit {
     const medicoRequest: MedicoRequest = {
       nomeCompleto: formValue.nomeCompleto,
       crm: formValue.crm,
-      especialidade: especialidadeSelecionada, // <<< CORRETO: Envia o objeto
+      especialidade: especialidadeSelecionada,
       email: formValue.email,
-      password: formValue.password, // Incluir senha se presente
+      password: formValue.password,
     };
 
     const operationObservable =
@@ -174,14 +163,14 @@ export class CriarMedicoComponent implements OnInit {
         : this.medicoService.criarMedico(medicoRequest);
 
     operationObservable.subscribe({
-      next: (response: MedicoResponseDTO) => {
+      next: (response: any) => {
         this.messageService.add({
           severity: 'success',
           summary: 'Sucesso',
           detail: `Médico ${this.isEditMode ? 'atualizado' : 'cadastrado'} com sucesso!`,
         });
         this.medicoForm.reset();
-        this.router.navigate(['/dashboard/medicos']);
+        this.router.navigate(['/dashboard/medicos/medicos']);
       },
       error: (error) => {
         console.error(`Erro ao ${this.isEditMode ? 'atualizar' : 'cadastrar'} médico:`, error);
@@ -189,7 +178,7 @@ export class CriarMedicoComponent implements OnInit {
           severity: 'error',
           summary: 'Erro',
           detail:
-            error.error?.message ||
+            error.error?.error?.message ||
             `Não foi possível ${this.isEditMode ? 'atualizar' : 'cadastrar'} o médico.`,
         });
       },
@@ -200,6 +189,6 @@ export class CriarMedicoComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/dashboard/medicos']);
+    this.router.navigate(['/dashboard/medicos/medicos']);
   }
 }

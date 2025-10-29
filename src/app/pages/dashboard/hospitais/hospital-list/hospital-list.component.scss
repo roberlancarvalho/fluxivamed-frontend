@@ -1,15 +1,13 @@
-@use 'sass:color';
-
 :host {
   display: block;
   padding: 1.5rem;
 }
 
-.medico-list-container {
+.hospital-list-container {
   background-color: var(--cor-fundo-card, #ffffff);
   border-radius: var(--raio-borda, 8px);
   box-shadow: var(--sombra-card, 0 2px 4px rgba(0, 0, 0, 0.05));
-  padding: 0; // Resetar padding do mat-card se houver
+  padding: 0;
 }
 
 mat-card-header {
@@ -66,7 +64,7 @@ mat-card-content {
   width: 100%;
 }
 
-.medico-table {
+.hospital-table {
   width: 100%;
 
   th.mat-header-cell {

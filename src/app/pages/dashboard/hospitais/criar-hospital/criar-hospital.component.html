@@ -1,0 +1,86 @@
+<mat-card class="criar-hospital-container">
+  <mat-card-header>
+    <mat-card-title>{{
+      isEditMode ? 'Editar Hospital' : 'Cadastrar Novo Hospital'
+    }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    </div>
+
+    <form
+      [formGroup]="hospitalForm"
+      (ngSubmit)="onSubmit()"
+      class="hospital-form"
+      *ngIf="!isLoading"
+    >
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Nome do Hospital</mat-label>
+        <input
+          matInput
+          formControlName="nome"
+          placeholder="Ex: Hospital Central de Niterói"
+          required
+        />
+        <mat-icon matSuffix>business</mat-icon>
+        <mat-error *ngIf="hospitalForm.get('nome')?.invalid">
+          {{ getErrorMessage('nome') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>CNPJ</mat-label>
+        <input matInput formControlName="cnpj" placeholder="00.000.000/0001-00" required />
+        <mat-icon matSuffix>badge</mat-icon>
+        <mat-error *ngIf="hospitalForm.get('cnpj')?.invalid">
+          {{ getErrorMessage('cnpj') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Telefone Principal (Obrigatório)</mat-label>
+        <input matInput formControlName="telefone1" placeholder="(XX) XXXX-XXXX" required />
+        <mat-icon matSuffix>call</mat-icon>
+        <mat-error *ngIf="hospitalForm.get('telefone1')?.invalid">
+          {{ getErrorMessage('telefone1') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Telefone Secundário (Opcional)</mat-label>
+        <input matInput formControlName="telefone2" placeholder="(XX) XXXX-XXXX" />
+        <mat-icon matSuffix>phone_in_talk</mat-icon>
+        <mat-error *ngIf="hospitalForm.get('telefone2')?.invalid">
+          {{ getErrorMessage('telefone2') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Endereço</mat-label>
+        <textarea
+          matInput
+          formControlName="endereco"
+          placeholder="Ex: Rua, Nº, Bairro, Cidade - UF"
+        ></textarea>
+        <mat-icon matSuffix>location_on</mat-icon>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="cancelar()" [disabled]="isLoading">
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="hospitalForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">{{
+            isEditMode ? 'Atualizar Hospital' : 'Salvar Hospital'
+          }}</span>
+          <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+        </button>
+      </div></form></mat-card-content
+></mat-card>

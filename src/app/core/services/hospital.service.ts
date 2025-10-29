@@ -4,10 +4,20 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface Hospital {
-  id: number;
+  id: number | null;
   nome: string;
-  cnpj?: string;
+  cnpj: string;
   endereco?: string;
+  telefone1: string;
+  telefone2?: string;
+}
+
+export interface HospitalRequest {
+  nome: string;
+  cnpj: string;
+  endereco?: string;
+  telefone1: string;
+  telefone2?: string;
 }
 
 @Injectable({
@@ -18,19 +28,23 @@ export class HospitalService {
 
   constructor(private http: HttpClient) {}
 
-  criarHospital(hospital: Hospital): Observable<Hospital> {
-    return this.http.post<Hospital>(this.apiUrl, hospital);
-  }
-
   getHospitais(): Observable<Hospital[]> {
     return this.http.get<Hospital[]>(this.apiUrl);
   }
 
-  postHospital(hospital: Hospital): Observable<Hospital> {
+  getHospitalById(id: number): Observable<Hospital> {
+    return this.http.get<Hospital>(`${this.apiUrl}/${id}`);
+  }
+
+  criarHospital(hospital: HospitalRequest): Observable<Hospital> {
     return this.http.post<Hospital>(this.apiUrl, hospital);
   }
 
-  putHospital(hospital: Hospital): Observable<Hospital> {
-    return this.http.put<Hospital>(`${this.apiUrl}/${hospital.id}`, hospital);
+  atualizarHospital(id: number, hospital: HospitalRequest): Observable<Hospital> {
+    return this.http.put<Hospital>(`${this.apiUrl}/${id}`, hospital);
+  }
+
+  excluirHospital(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

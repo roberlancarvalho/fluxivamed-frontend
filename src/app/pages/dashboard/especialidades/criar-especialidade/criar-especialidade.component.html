@@ -1,0 +1,46 @@
+<mat-card class="criar-especialidade-container">
+  <mat-card-header>
+    <mat-card-title>{{
+      isEditMode ? 'Editar Especialidade' : 'Cadastrar Nova Especialidade'
+    }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    </div>
+
+    <form
+      [formGroup]="especialidadeForm"
+      (ngSubmit)="onSubmit()"
+      class="especialidade-form"
+      *ngIf="!isLoading"
+    >
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Nome da Especialidade</mat-label>
+        <input matInput formControlName="nome" placeholder="Ex: Cardiologia" required />
+        <mat-icon matSuffix>medical_services</mat-icon>
+        <mat-error *ngIf="especialidadeForm.get('nome')?.invalid">
+          {{ getErrorMessage('nome') }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="cancelar()" [disabled]="isLoading">
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="especialidadeForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">{{
+            isEditMode ? 'Atualizar Especialidade' : 'Salvar Especialidade'
+          }}</span>
+          <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

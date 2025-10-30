@@ -1,0 +1,153 @@
+<mat-card class="profile-container">
+  <mat-card-header>
+    <mat-card-title>Meu Perfil</mat-card-title>
+    <span class="header-spacer"></span>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="toggleEdit(true)"
+      *ngIf="!isEditing"
+      [disabled]="isLoading"
+    >
+      <mat-icon>edit</mat-icon>
+      Editar Perfil
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    </div>
+
+    <div class="avatar-section">
+      <img [src]="getFotoUrl()" alt="Foto do Perfil" class="profile-avatar">
+      
+      <input type="file" #avatarUpload (change)="onFileSelected($event)" accept="image/png, image/jpeg" style="display: none;">
+      
+      <button mat-stroked-button color="primary" (click)="avatarUpload.click()" *ngIf="isEditing">
+        <mat-icon>upload</mat-icon>
+        Trocar Foto
+      </button>
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form" *ngIf="!isLoading">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Nome Completo</mat-label>
+          <input matInput formControlName="fullName" required [readonly]="!isEditing" />
+          <mat-icon matSuffix>person</mat-icon>
+          <mat-error *ngIf="profileForm.get('fullName')?.invalid">
+            {{ getErrorMessage('fullName') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>E-mail</mat-label>
+          <input matInput formControlName="email" readonly />
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Telefone</mat-label>
+          <input
+            matInput
+            formControlName="telefone"
+            placeholder="(XX) XXXXX-XXXX"
+            [readonly]="!isEditing"
+          />
+          <mat-icon matSuffix>phone</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <ng-container *ngIf="isMedico">
+        <div class="divider">Dados Médicos</div>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>CRM</mat-label>
+            <input matInput formControlName="crm" required [readonly]="!isEditing" />
+            <mat-icon matSuffix>medical_information</mat-icon>
+            <mat-error *ngIf="profileForm.get('crm')?.invalid">
+              {{ getErrorMessage('crm') }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Especialidade</mat-label>
+            <mat-select
+              formControlName="especialidade"
+              [compareWith]="compareEspecialidade"
+              required
+              [disabled]="!isEditing"
+            >
+              <mat-option *ngFor="let esp of especialidadesDisponiveis" [value]="esp">
+                {{ esp.nome }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="profileForm.get('especialidade')?.invalid">
+              {{ getErrorMessage('especialidade') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field" *ngIf="showOtherEspecialidadeInput">
+          <mat-label>Outra Especialidade</mat-label>
+          <input
+            matInput
+            formControlName="outraEspecialidade"
+            placeholder="Digite a especialidade"
+            [readonly]="!isEditing"
+          />
+          <mat-error *ngIf="profileForm.get('outraEspecialidade')?.invalid">
+            Campo obrigatório.
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <div class="divider">Alterar Senha</div>
+      <p class="form-hint" *ngIf="!isEditing">Clique em "Editar" para alterar sua senha.</p>
+      <p class="form-hint" *ngIf="isEditing">Deixe em branco para não alterar a senha.</p>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Nova Senha</mat-label>
+          <input matInput formControlName="password" type="password" [readonly]="!isEditing" />
+          <mat-icon matSuffix>lock</mat-icon>
+          <mat-error *ngIf="profileForm.get('password')?.invalid">
+            {{ getErrorMessage('password') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Confirmar Nova Senha</mat-label>
+          <input
+            matInput
+            formControlName="confirmPassword"
+            type="password"
+            [readonly]="!isEditing"
+          />
+          <mat-icon matSuffix>lock_reset</mat-icon>
+          <mat-error *ngIf="profileForm.get('confirmPassword')?.invalid">
+            {{ getErrorMessage('confirmPassword') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions" *ngIf="isEditing">
+        <button mat-stroked-button type="button" (click)="cancelarEdicao()" [disabled]="isLoading">
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="profileForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">Salvar Alterações</span>
+          <mat-spinner *ngIf="isLoading" diameter="20" class="button-spinner"></mat-spinner>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

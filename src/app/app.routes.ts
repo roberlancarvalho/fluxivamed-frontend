@@ -4,15 +4,18 @@ import { LoginComponent } from './auth/login/login.component';
 import { authGuard } from './core/guards/auth-guard';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DisponibilidadeComponent } from './pages/dashboard/disponibilidade/disponibilidade.component';
+import { CriarEspecialidadeComponent } from './pages/dashboard/especialidades/criar-especialidade/criar-especialidade.component';
+import { EspecialidadeListComponent } from './pages/dashboard/especialidades/especialidade-list/especialidade-list.component';
+import { CriarHospitalComponent } from './pages/dashboard/hospitais/criar-hospital/criar-hospital.component';
+import { HospitalListComponent } from './pages/dashboard/hospitais/hospital-list/hospital-list.component';
 import { CriarMedicoComponent } from './pages/dashboard/medicos/criar-medico.component';
+import { MedicoListComponent } from './pages/dashboard/medicos/medico-list/medico-list.component';
 import { OverviewComponent } from './pages/dashboard/overview/overview.component';
 import { BuscarPlantoesComponent } from './pages/dashboard/plantoes/buscar-plantoes/buscar-plantoes.component';
 import { CriarPlantaoComponent } from './pages/dashboard/plantoes/criar-plantao/criar-plantao.component';
 import { PlantaoDetalhesComponent } from './pages/dashboard/plantoes/plantao-detalhes/plantao-detalhes.component';
 import { PlantaoListComponent } from './pages/dashboard/plantoes/plantao-list/plantao-list.component';
-import { MedicoListComponent } from './pages/dashboard/medicos/medico-list/medico-list.component';
-import { HospitalListComponent } from './pages/dashboard/hospitais/hospital-list/hospital-list.component';
-import { CriarHospitalComponent } from './pages/dashboard/hospitais/criar-hospital/criar-hospital.component';
+import { PerfilComponent } from './pages/dashboard/perfil/perfil.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
@@ -117,6 +120,33 @@ export const routes: Routes = [
         title: 'FluxivaMed - Editar Hospital',
         canActivate: [authGuard],
         data: { roles: ['ADMIN', 'HOSPITAL_ADMIN'] },
+      },
+      {
+        path: 'especialidades',
+        component: EspecialidadeListComponent,
+        title: 'FluxivaMed - Listar Especialidades',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN'] },
+      },
+      {
+        path: 'especialidades/criar',
+        component: CriarEspecialidadeComponent,
+        title: 'FluxivaMed - Adicionar Especialidade',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN'] },
+      },
+      {
+        path: 'especialidades/editar/:id',
+        component: CriarEspecialidadeComponent,
+        title: 'FluxivaMed - Editar Especialidade',
+        canActivate: [authGuard],
+        data: { roles: ['ADMIN', 'HOSPITAL_ADMIN'] },
+      },
+      {
+        path: 'perfil',
+        component: PerfilComponent,
+        title: 'FluxivaMed - Meu Perfil',
+        canActivate: [authGuard]
       },
     ],
   },

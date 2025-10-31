@@ -76,6 +76,7 @@ export interface FiltrosBuscaPlantoes {
   hospitalId?: number;
   data?: string;
   status?: StatusPlantao[];
+  espcialidade?: string
 }
 
 @Injectable({

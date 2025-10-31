@@ -20,9 +20,11 @@ import { of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { Hospital, HospitalService } from '../../../../core/services/hospital.service';
 import {
+  FiltrosBuscaPlantoes,
   PageResponse,
   PlantaoResponse,
   PlantaoService,
+  StatusPlantao,
 } from '../../../../core/services/plantao.service';
 
 @Component({
@@ -95,9 +97,18 @@ export class BuscarPlantoesComponent implements OnInit {
     const filtros = this.filtroForm.value;
 
     const dataFormatada = filtros.data ? this.datePipe.transform(filtros.data, 'yyyy-MM-dd') : null;
-    const filtrosFormatados = {
-      ...filtros,
-      data: dataFormatada,
+
+    const filtrosFormatados: FiltrosBuscaPlantoes = {
+      hospitalId: filtros.hospitalId || undefined,
+      data: dataFormatada || undefined,
+      // especialidade: filtros.especialidade || undefined,
+      status: [
+        StatusPlantao.DISPONIVEL,
+        StatusPlantao.AGUARDANDO_APROVACAO,
+        StatusPlantao.PREENCHIDO,
+        StatusPlantao.REALIZADO,
+        StatusPlantao.CANCELADO,
+      ],
     };
 
     this.plantaoService
@@ -149,20 +160,36 @@ export class BuscarPlantoesComponent implements OnInit {
       });
   }
 
-  getChipColor(status: string): 'primary' | 'accent' | 'warn' | '' {
+  getChipColor(status: string | StatusPlantao): 'primary' | 'accent' | 'warn' | '' {
     switch (status) {
-      case 'DISPONIVEL':
+      case StatusPlantao.DISPONIVEL:
         return 'primary';
-      case 'AGUARDANDO_APROVACAO':
+      case StatusPlantao.AGUARDANDO_APROVACAO:
         return 'accent';
-      case 'PREENCHIDO':
+      case StatusPlantao.PREENCHIDO:
         return 'warn';
-      case 'REALIZADO':
-        return '';
-      case 'CANCELADO':
+      case StatusPlantao.REALIZADO:
+      case StatusPlantao.CANCELADO:
         return '';
       default:
         return '';
+    }
+  }
+
+  formatStatus(status: string | StatusPlantao): string {
+    switch (status) {
+      case StatusPlantao.DISPONIVEL:
+        return 'Disponível';
+      case StatusPlantao.AGUARDANDO_APROVACAO:
+        return 'Aguardando Aprovação';
+      case StatusPlantao.PREENCHIDO:
+        return 'Preenchido';
+      case StatusPlantao.REALIZADO:
+        return 'Realizado';
+      case StatusPlantao.CANCELADO:
+        return 'Cancelado';
+      default:
+        return status ? status.toString() : 'Desconhecido';
     }
   }
 }

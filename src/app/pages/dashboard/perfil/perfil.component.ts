@@ -356,6 +356,30 @@ export class PerfilComponent implements OnInit {
     this.router.navigate(['/dashboard/overview']);
   }
 
+  excluirConta(): void {
+    if (
+      confirm('Deseja mesmo excluir? Para criar novamente, terá que contactar o ADMINISTRADOR.')
+    ) {
+      this.isLoading = true;
+      this.profileService
+        .excluirMinhaConta()
+        .pipe(finalize(() => (this.isLoading = false)))
+        .subscribe({
+          next: () => {
+            this._snackBar.open('Conta excluída com sucesso.', 'Fechar', { duration: 3000 });
+            this.authService.logout();
+            this.router.navigate(['/auth/login']);
+          },
+          error: (err: HttpErrorResponse) => {
+            this._snackBar.open(err.error?.message || 'Erro ao excluir conta.', 'Fechar', {
+              duration: 5000,
+              panelClass: ['snackbar-error'],
+            });
+          },
+        });
+    }
+  }
+
   getErrorMessage(controlName: string): string {
     const control = this.profileForm.get(controlName);
     if (control?.hasError('required')) {

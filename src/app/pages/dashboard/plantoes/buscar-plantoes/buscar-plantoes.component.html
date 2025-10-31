@@ -82,9 +82,9 @@
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell *matCellDef="let plantao">
-              <mat-chip-row [color]="getChipColor(plantao.status)" selected>
-                {{ plantao.status }}
-              </mat-chip-row>
+              <mat-chip [color]="getChipColor(plantao.status)" selected>
+                {{ formatStatus(plantao.status) }}
+              </mat-chip>
             </td>
           </ng-container>
 
@@ -95,7 +95,7 @@
                 mat-flat-button
                 color="primary"
                 (click)="onCandidatarSe(plantao.id)"
-                [disabled]="isLoading"
+                [disabled]="isLoading || plantao.status !== 'DISPONIVEL'"
               >
                 <mat-icon>how_to_reg</mat-icon>
                 Candidatar-se

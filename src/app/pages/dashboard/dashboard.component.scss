@@ -15,12 +15,12 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f4f7f6;
+  background-color: var(--cor-fundo-pagina);
   transition: all 0.3s ease;
 }
 
 .content {
   flex-grow: 1;
-  padding: 2rem;
+  padding: var(--espacamento-lg, 1.5rem);
   overflow-y: auto;
 }

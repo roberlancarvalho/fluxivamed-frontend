@@ -3,7 +3,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-// import { MatChipsModule } from '@angular/material/chips'; // <<< REMOVER
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,8 +10,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
+import { TagModule } from 'primeng/tag';
 import { Observable, Subscription, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
 import {
   FiltrosBuscaPlantoes,
@@ -21,7 +21,6 @@ import {
   PlantaoService,
   StatusPlantao,
 } from '../../../../core/services/plantao.service';
-import { TagModule } from 'primeng/tag'; // <<< ADICIONAR IMPORT DO PRIMENG
 
 @Component({
   selector: 'app-plantao-list',
@@ -34,8 +33,7 @@ import { TagModule } from 'primeng/tag'; // <<< ADICIONAR IMPORT DO PRIMENG
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    // MatChipsModule, // <<< REMOVER
-    TagModule, // <<< ADICIONAR
+    TagModule,
     MatTooltipModule,
     MatCardModule,
   ],
@@ -80,7 +78,7 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.isMedico = this.authService.hasRole('MEDICO');
@@ -233,17 +231,17 @@ export class PlantaoListComponent implements OnInit, OnDestroy {
   ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     switch (status) {
       case StatusPlantao.DISPONIVEL:
-        return 'success'; // Verde (padrão Lara Blue)
+        return 'success';
       case StatusPlantao.AGUARDANDO_APROVACAO:
-        return 'warn'; // Laranja/Amarelo
+        return 'warn';
       case StatusPlantao.PREENCHIDO:
-        return 'info'; // Azul (diferente do Disponível)
+        return 'info';
       case StatusPlantao.REALIZADO:
-        return 'secondary'; // Cinza
+        return 'secondary';
       case StatusPlantao.CANCELADO:
-        return 'danger'; // Vermelho
+        return 'danger';
       default:
-        return 'info'; // Padrão
+        return 'info';
     }
   }
 

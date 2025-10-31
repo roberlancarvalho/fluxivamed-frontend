@@ -24,7 +24,7 @@
     </div>
 
     <div *ngIf="!isLoading && !errorMessage && isMedico" class="table-section">
-      <h3>Meus Plantões</h3>
+      <h3>Lista dos meus plantões</h3>
       <div *ngIf="meusPlantoes.length > 0; else noPlantoesMedico">
         <div class="table-responsive-wrapper">
           <table mat-table [dataSource]="meusPlantoes" class="mat-elevation-z8 plantao-table">

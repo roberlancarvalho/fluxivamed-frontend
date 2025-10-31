@@ -1,33 +1,10 @@
 @use 'sass:color';
 
-$scss-primary-blue: #4a90e2;
-$scss-accent-green: #50e3c2;
-$scss-light-gray: #f4f7f6;
-$scss-dark-text: #333;
-$scss-medium-gray: #ccc;
-$scss-border-color: #ddd;
-$sidebar-dark-bg: #0d253f;
-$sidebar-text-color: #adb5bd;
-$active-item-color: #fff;
-$hover-item-bg: rgba(255, 255, 255, 0.05);
-$submenu-bg: rgba(0, 0, 0, 0.2);
-
-:host {
-  --primary-blue: #4a90e2;
-  --accent-green: #50e3c2;
-  --light-gray: #f4f7f6;
-  --dark-text: #333;
-  --medium-gray: #ccc;
-  --border-color: #ddd;
-  --sidebar-dark-bg: #0d253f;
-  --sidebar-text-color: #adb5bd;
-}
-
 :host {
   display: block;
   height: 100%;
-  background-color: var(--sidebar-dark-bg);
-  color: var(--sidebar-text-color);
+  background-color: var(--cor-sidebar-bg);
+  color: var(--cor-sidebar-texto);
   overflow: hidden;
   position: relative;
   z-index: 1000;
@@ -121,7 +98,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
   }
 
   .toggle-button {
-    background-color: var(--primary-blue);
+    background-color: var(--cor-primaria);
     color: white;
     border: none;
     border-radius: 50%;
@@ -140,7 +117,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     z-index: 1001;
 
     &:hover {
-      background-color: color.scale($scss-primary-blue, $lightness: -10%);
+      background-color: #7baaf5;
     }
 
     i {
@@ -151,7 +128,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
 
 .sidebar-nav {
   flex-grow: 1;
-  padding-top: 1rem;
+  padding-top: 2rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -170,7 +147,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     padding: 0.9rem 1.5rem;
-    color: var(--sidebar-text-color);
+    color: var(--cor-sidebar-texto);
     text-decoration: none;
     transition: background-color 0.3s, color 0.3s, justify-content 0.3s ease, padding 0.3s ease;
     font-weight: 500;
@@ -178,8 +155,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     white-space: nowrap;
 
     i {
-      width: auto;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       margin-right: 0.5rem;
       align-items: center;
       transition: margin-right 0.3s ease;
@@ -190,13 +166,13 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     }
 
     &:hover {
-      background-color: $hover-item-bg;
-      color: $active-item-color;
+      background-color: var(--cor-sidebar-hover-bg);
+      color: var(--cor-sidebar-texto-ativo);
     }
 
     &.active {
-      background-color: var(--primary-blue);
-      color: $active-item-color;
+      background-color: var(--cor-primaria);
+      color: var(--cor-sidebar-texto-ativo);
       position: relative;
 
       &::before {
@@ -206,7 +182,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
         top: 0;
         height: 100%;
         width: 4px;
-        background-color: var(--accent-green);
+        background-color: var(--cor-sucesso);
       }
     }
   }
@@ -234,7 +210,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     list-style: none;
     padding: 0;
     margin: 0;
-    background-color: $submenu-bg;
+    background-color: var(--cor-sidebar-submenu-bg);
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.3s ease-out;
@@ -244,7 +220,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
       align-items: center;
       padding: 0.7rem 1.5rem 0.7rem 2.8rem;
       font-size: 0.95rem;
-      color: rgba($sidebar-text-color, 0.8);
+      color: rgba(var(--cor-sidebar-texto-rgb, 173, 181, 189), 0.8);
       white-space: nowrap;
 
       i {
@@ -256,13 +232,13 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
 
       &:hover {
         background-color: rgba(255, 255, 255, 0.03);
-        color: $active-item-color;
+        color: var(--cor-sidebar-texto-ativo);
       }
       &.active {
-        background-color: rgba($scss-primary-blue, 0.7);
-        color: $active-item-color;
+        background-color: rgba(var(--cor-primaria-rgb, 59, 130, 246), 0.7);
+        color: var(--cor-sidebar-texto-ativo);
         &::before {
-          background-color: var(--accent-green);
+          background-color: var(--cor-sucesso);
         }
       }
     }
@@ -274,7 +250,7 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 
   .menu-item {
-    color: var(--sidebar-text-color);
+    color: var(--cor-sidebar-texto);
     text-decoration: none;
     cursor: pointer;
     transition: color 0.3s, justify-content 0.3s ease, padding 0.3s ease;
@@ -289,13 +265,13 @@ $submenu-bg: rgba(0, 0, 0, 0.2);
     }
 
     &:hover {
-      color: $active-item-color;
+      color: var(--cor-sidebar-texto-ativo);
     }
   }
 }
 
 .badge {
-  background-color: #dc3545;
+  background-color: var(--cor-aviso);
   color: white;
   border-radius: 50%;
   padding: 2px 6px;

@@ -20,6 +20,8 @@ mat-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 
   mat-card-title {
     font-size: 1.75rem;
@@ -81,12 +83,9 @@ mat-card-content {
     letter-spacing: 0.5px;
   }
 
-  /* --- INÍCIO DA CORREÇÃO DE LINHA --- */
-
   td.mat-cell,
   th.mat-header-cell {
     padding: 14px 16px;
-    /* border-bottom: 1px solid #edf2f7; <-- REMOVIDO DAQUI */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -94,12 +93,12 @@ mat-card-content {
   }
 
   tr.mat-header-row {
-    border-bottom: 2px solid #e0e0e0; /* Borda mais forte para o header */
+    border-bottom: 2px solid #e0e0e0;
   }
 
   tr.mat-row {
     transition: background-color 0.2s ease-in-out;
-    border-bottom: 1px solid #edf2f7; /* <-- ADICIONADO AQUI, NA LINHA */
+    border-bottom: 1px solid #edf2f7;
   }
 
   tr.mat-row:hover {
@@ -107,10 +106,8 @@ mat-card-content {
   }
 
   tr.mat-row:last-child {
-    border-bottom: none; /* <-- AGORA SE APLICA À LINHA */
+    border-bottom: none;
   }
-
-  /* --- FIM DA CORREÇÃO DE LINHA --- */
 
   td.mat-cell {
     color: #2d3748;
@@ -121,15 +118,14 @@ mat-card-content {
 .coluna-acoes {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   gap: 4px;
   flex-wrap: nowrap;
+  justify-content: flex-start;
 
   button[mat-icon-button] {
     transition: all 0.2s ease-in-out;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -297,9 +293,9 @@ mat-chip-row {
   border: 1px solid #d32f2f;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 960px) {
   :host {
-    padding: 12px;
+    padding: 10px;
   }
 
   mat-card-header {
@@ -308,7 +304,7 @@ mat-chip-row {
     padding: 16px !important;
 
     mat-card-title {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       margin-bottom: 16px;
     }
 
@@ -327,33 +323,125 @@ mat-chip-row {
 
   th.mat-header-cell,
   td.mat-cell {
-    padding: 12px 8px;
-    font-size: 0.85rem;
+    padding: 12px 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 600px) {
+  :host {
+    padding: 0;
+  }
+
+  .plantao-list-container {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  mat-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px !important;
+    border-radius: 0;
+
+    mat-card-title {
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+    }
+
+    button {
+      width: 100%;
+      height: 40px;
+      font-size: 0.9rem;
+    }
+  }
+
+  mat-card-content {
+    padding: 0;
+  }
+
+  .table-section {
+    h3 {
+      display: none;
+    }
+  }
+
+  .table-responsive-wrapper {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin-bottom: 0;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .plantao-table {
+    min-width: 100%;
+    .mat-column-fim,
+    .mat-column-valor,
+    .mat-column-medicoNome,
+    .mat-column-id {
+      display: none;
+    }
+  }
+
+  th.mat-header-cell,
+  td.mat-cell {
+    padding: 12px 10px;
+    font-size: 0.9rem;
+
+    &.mat-column-acoes {
+      justify-content: flex-end;
+    }
+  }
+
+  td.mat-cell {
+    white-space: normal;
+    line-height: 1.4;
   }
 
   .coluna-acoes {
-    gap: 2px;
+    gap: 0;
     button[mat-icon-button] {
-      width: 32px;
-      height: 32px;
+      width: 38px;
+      height: 38px;
       mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
       }
     }
   }
 
   :host ::ng-deep .custom-paginator {
-    padding: 8px;
+    padding: 8px 12px;
     flex-direction: column;
     gap: 10px;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 0;
+
+    .mat-mdc-paginator-container {
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+    }
 
     .mat-mdc-paginator-page-size {
       order: 2;
+      width: 100%;
+      justify-content: center;
+
+      .mat-mdc-form-field {
+        width: 100px;
+      }
     }
     .mat-mdc-paginator-range-actions {
       order: 1;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .mat-mdc-paginator-range-label {
+      font-size: 14px;
     }
   }
 }

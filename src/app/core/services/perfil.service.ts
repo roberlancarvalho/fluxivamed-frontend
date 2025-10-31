@@ -42,9 +42,10 @@ export class ProfileService {
   uploadAvatar(file: File): Observable<{ fotoUrl: string }> {
     const formData = new FormData();
     formData.append('file', file, file.name);
-
-    // Não precisa de Headers 'Content-Type', o navegador define
-    // 'multipart/form-data' automaticamente com o FormData
     return this.http.put<{ fotoUrl: string }>(`${this.apiUrl}/me/avatar`, formData);
+  }
+
+  excluirMinhaConta(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/me`);
   }
 }

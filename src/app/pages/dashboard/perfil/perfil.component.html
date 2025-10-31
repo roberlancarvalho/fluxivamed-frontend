@@ -2,32 +2,22 @@
   <mat-card-header>
     <mat-card-title>Meu Perfil</mat-card-title>
     <span class="header-spacer"></span>
-    <button
-      mat-flat-button
-      color="primary"
-      (click)="toggleEdit(true)"
-      *ngIf="!isEditing"
-      [disabled]="isLoading"
-    >
-      <mat-icon>edit</mat-icon>
-      Editar Perfil
-    </button>
+
+    <div class="header-actions" *ngIf="!isEditing">
+      <button mat-stroked-button color="warn" (click)="excluirConta()" [disabled]="isLoading">
+        <mat-icon>delete_forever</mat-icon>
+        Excluir Conta
+      </button>
+      <button mat-flat-button color="primary" (click)="toggleEdit(true)" [disabled]="isLoading">
+        <mat-icon>edit</mat-icon>
+        Editar Perfil
+      </button>
+    </div>
   </mat-card-header>
 
   <mat-card-content>
     <div *ngIf="isLoading" class="loading-overlay">
       <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-    </div>
-
-    <div class="avatar-section">
-      <img [src]="getFotoUrl()" alt="Foto do Perfil" class="profile-avatar">
-      
-      <input type="file" #avatarUpload (change)="onFileSelected($event)" accept="image/png, image/jpeg" style="display: none;">
-      
-      <button mat-stroked-button color="primary" (click)="avatarUpload.click()" *ngIf="isEditing">
-        <mat-icon>upload</mat-icon>
-        Trocar Foto
-      </button>
     </div>
 
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form" *ngIf="!isLoading">

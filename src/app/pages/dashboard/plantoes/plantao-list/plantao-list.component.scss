@@ -116,11 +116,11 @@ mat-card-content {
 }
 
 .coluna-acoes {
-  display: flex;
   align-items: center;
   gap: 4px;
   flex-wrap: nowrap;
   justify-content: flex-start;
+  display: flex;
 
   button[mat-icon-button] {
     transition: all 0.2s ease-in-out;

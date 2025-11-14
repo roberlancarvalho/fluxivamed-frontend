@@ -1,35 +1,82 @@
-<header class="header-container">
-  <div class="header-content">
-    <h1 class="page-title">{{ pageTitle }}</h1>
+<mat-toolbar color="primary" class="header-toolbar">
+  <a routerLink="/dashboard" class="logo-link">
+    <span>FluxivaMed</span>
+  </a>
 
-    <div class="header-actions">
-      <button class="action-btn" (click)="onAlertsClick()" title="Alertas">
-        <i class="fas fa-bell"></i>
-        <span *ngIf="unreadAlertsCount > 0" class="badge">{{ unreadAlertsCount }}</span>
+  <span class="spacer"></span>
+
+  <div *ngIf="isLoggedIn" class="user-actions">
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="notificationMenu"
+      aria-label="Notificações"
+      (click)="markAllAsRead()"
+    >
+      <mat-icon
+        matBadge="{{ unreadNotificationsCount > 0 ? unreadNotificationsCount : '' }}"
+        matBadgeColor="warn"
+        aria-hidden="false"
+      >
+        notifications
+      </mat-icon>
+    </button>
+    <mat-menu #notificationMenu="matMenu">
+      <button mat-menu-item disabled>
+        <span>Você não tem novas notificações.</span>
       </button>
+      <hr class="header-divider" role="separator" aria-hidden="true" />
+      <button mat-menu-item (click)="$event.stopPropagation(); markAllAsRead()">
+        <mat-icon>done_all</mat-icon>
+        <span>Marcar todas como lidas</span>
+      </button>
+    </mat-menu>
 
-      <button class="action-btn" (click)="onSettingsClick()" title="Configurações">
+    <div class="settings-menu-container" (click)="$event.stopPropagation()">
+      <button class="action-btn" (click)="toggleSettingsMenu()" title="Configurações">
         <i class="fas fa-cog"></i>
       </button>
 
-      <div class="profile-menu-container" (click)="$event.stopPropagation()">
-        <button class="action-btn profile-btn" (click)="toggleProfileMenu()" title="Meu Perfil">
-          <i class="fas fa-user-circle"></i>
-          <span>Olá, {{ userName }}</span>
-          <i class="fas fa-angle-down arrow-icon" [class.rotated]="isProfileMenuOpen"></i>
-        </button>
-
-        <div class="profile-dropdown" [class.show]="isProfileMenuOpen">
-          <a routerLink="/dashboard/perfil" (click)="closeProfileMenu()">
-            <i class="fas fa-user-edit"></i>
-            <span>Meu Perfil</span>
-          </a>
-          <a (click)="logout()">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Sair</span>
-          </a>
+      <div class="settings-dropdown" [class.show]="isSettingsMenuOpen">
+        <div class="settings-header">
+          <span>Configurações</span>
+        </div>
+        <div class="settings-content">
+          <label>Tema da Aplicação</label>
+          <div class="theme-options">
+            <button (click)="changeTheme('light')" [class.active]="currentTheme === 'light'">
+              <i class="fas fa-sun"></i> Claro
+            </button>
+            <button (click)="changeTheme('dark')" [class.active]="currentTheme === 'dark'">
+              <i class="fas fa-moon"></i> Escuro
+            </button>
+          </div>
+          <mat-slide-toggle
+            [checked]="receberEmailAprovacao"
+            (change)="toggleNotificacao('receberEmailAprovacao', $event.checked)"
+          >
+            Receber e-mail de aprovação
+          </mat-slide-toggle>
         </div>
       </div>
     </div>
+
+    <div class="profile-menu-container" (click)="$event.stopPropagation()">
+      <button class="action-btn profile-btn" (click)="toggleProfileMenu()" title="Meu Perfil">
+        <i class="fas fa-user-circle"></i>
+        <span>Olá, {{ userName }}</span>
+        <i class="fas fa-angle-down arrow-icon" [class.rotated]="isProfileMenuOpen"></i>
+      </button>
+
+      <div class="profile-dropdown" [class.show]="isProfileMenuOpen">
+        <a routerLink="/dashboard/perfil" (click)="closeAllMenus()">
+          <i class="fas fa-user-edit"></i>
+          <span>Meu Perfil</span>
+        </a>
+        <a (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Sair</span>
+        </a>
+      </div>
+    </div>
   </div>
-</header>
+</mat-toolbar>

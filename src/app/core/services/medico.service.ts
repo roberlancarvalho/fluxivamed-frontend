@@ -9,7 +9,8 @@ export interface MedicoRequest {
   password?: string;
   nomeCompleto: string;
   crm: string;
-  especialidade: Especialidade;
+  especialidadeId: number | null;
+  telefone?: string | null;
 }
 
 export interface MedicoResponseDTO {
@@ -54,7 +55,7 @@ export class MedicoService {
   private apiUrl = `${environment.apiUrl}/api/v1/medicos`;
   private authApiUrl = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   criarMedico(medico: MedicoRequest): Observable<any> {
     return this.http.post<any>(`${this.authApiUrl}/register`, medico);
@@ -99,5 +100,9 @@ export class MedicoService {
 
   deleteDisponibilidade(periodoId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/minha-disponibilidade/${periodoId}`);
+  }
+
+  excluirMedico(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

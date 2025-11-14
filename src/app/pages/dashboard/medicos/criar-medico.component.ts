@@ -35,7 +35,7 @@ export class CriarMedicoComponent implements OnInit {
     private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.medicoId = this.route.snapshot.params['id']
@@ -54,6 +54,7 @@ export class CriarMedicoComponent implements OnInit {
       especialidade: [null as Especialidade | null, Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]],
+      telefone: [''] // <-- Adicionei o campo telefone que faltava no formulário
     });
   }
 
@@ -72,7 +73,6 @@ export class CriarMedicoComponent implements OnInit {
           return of([]);
         }),
         tap((data: Especialidade[]) => {
-          console.log('Especialidades carregadas (Medico):', data);
           this.especialidadesDisponiveis = data;
         }),
         finalize(() => {
@@ -114,6 +114,7 @@ export class CriarMedicoComponent implements OnInit {
             crm: medico.crm,
             especialidade: especialidadeObj,
             email: medico.email,
+            telefone: medico.telefone
           });
         }
       });
@@ -136,8 +137,7 @@ export class CriarMedicoComponent implements OnInit {
 
     this.isLoading = true;
     const formValue = this.medicoForm.value;
-
-    const especialidadeSelecionada: Especialidade = formValue.especialidade;
+    const especialidadeSelecionada: Especialidade | null = formValue.especialidade;
 
     if (!especialidadeSelecionada || !especialidadeSelecionada.id) {
       this.messageService.add({
@@ -152,9 +152,10 @@ export class CriarMedicoComponent implements OnInit {
     const medicoRequest: MedicoRequest = {
       nomeCompleto: formValue.nomeCompleto,
       crm: formValue.crm,
-      especialidade: especialidadeSelecionada,
+      especialidadeId: especialidadeSelecionada.id,
       email: formValue.email,
       password: formValue.password,
+      telefone: formValue.telefone
     };
 
     const operationObservable =
@@ -178,7 +179,7 @@ export class CriarMedicoComponent implements OnInit {
           severity: 'error',
           summary: 'Erro',
           detail:
-            error.error?.error?.message ||
+            error.error?.message ||
             `Não foi possível ${this.isEditMode ? 'atualizar' : 'cadastrar'} o médico.`,
         });
       },

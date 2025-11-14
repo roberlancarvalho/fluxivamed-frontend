@@ -1,193 +1,191 @@
-@use 'sass:color';
-
-/* Variáveis de Cor (ajuste conforme seu tema) */
-$primary-color: #4a90e2;
-$text-color-light: #666;
-$text-color-dark: #333;
-$border-color: #eee;
-$danger-color: #dc3545;
-$danger-hover: #c82333;
-$dropdown-bg: #ffffff;
-$dropdown-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-$dropdown-hover: #f4f7f6;
-
-.header-container {
-  background-color: $dropdown-bg;
-  padding: 0 20px; /* Reduzido padding vertical, altura controlada por height */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  height: 60px;
-  border-bottom: 1px solid $border-color;
-  z-index: 1001; /* Para ficar acima do conteúdo */
-}
-
-.header-content {
+.header-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  padding: 0 1rem 0 1.5rem;
+  background-color: var(--cor-fundo-card);
+  color: var(--cor-texto);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.page-title {
-  font-size: 1.5em;
-  color: $text-color-dark;
-  margin: 0;
-  font-weight: 600;
+.logo-link {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cor-primaria);
+  text-decoration: none;
 }
 
-.header-actions {
+.spacer {
+  flex-grow: 1;
+}
+
+.user-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.5rem;
 }
 
 .action-btn {
   background: none;
   border: none;
-  color: $text-color-light;
-  font-size: 1.2rem;
-  padding: 10px;
-  border-radius: 50%;
   cursor: pointer;
-  position: relative;
+  color: var(--cor-texto-secundario);
+  padding: 0.5rem;
+  border-radius: var(--raio-borda);
+  transition: background-color 0.2s, color 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px; /* Tamanho fixo */
-  height: 40px; /* Tamanho fixo */
-  transition: background-color 0.2s, color 0.2s;
+  font-size: 1rem;
+  position: relative;
+  
 
   &:hover {
-    background-color: $dropdown-hover;
-    color: $primary-color;
+    background-color: var(--cor-fundo-pagina);
+    color: var(--cor-primaria);
   }
 
   i {
-    margin: 0; /* Remove a margem direita do .fas global */
+    font-size: 1.2rem;
   }
 
   .badge {
+    background-color: var(--cor-aviso);
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
     position: absolute;
     top: 5px;
     right: 5px;
-    background-color: $danger-color;
-    color: white;
-    font-size: 0.65rem;
-    font-weight: bold;
-    padding: 2px 5px;
-    border-radius: 50%;
-    line-height: 1;
   }
 }
 
-.profile-menu-container {
-  position: relative;
+.profile-btn {
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
 
-  .profile-btn {
-    width: auto; /* Permite que o botão de perfil se ajuste ao nome */
-    height: 40px;
-    border-radius: 20px; /* Bordas arredondadas */
-    padding: 0 15px 0 10px;
-    gap: 8px;
+  i {
+    font-size: 1.3rem;
+  }
 
-    span {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: $text-color-dark;
-    }
+  span {
+    font-weight: 500;
+    color: var(--cor-texto);
+  }
 
-    .arrow-icon {
-      font-size: 0.8rem;
-      color: $text-color-light;
-      transition: transform 0.2s ease;
-    }
-
-    .arrow-icon.rotated {
+  .arrow-icon {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+    &.rotated {
       transform: rotate(180deg);
     }
   }
 }
 
-.profile-dropdown {
+.profile-menu-container,
+.settings-menu-container {
+  position: relative;
+}
+
+.profile-dropdown,
+.settings-dropdown {
   position: absolute;
-  top: 110%; /* Ligeiramente abaixo do botão */
+  top: calc(100% + 10px);
   right: 0;
-  background-color: $dropdown-bg;
-  border-radius: 8px;
-  box-shadow: $dropdown-shadow;
-  width: 200px;
+  background-color: var(--cor-fundo-card);
+  border-radius: var(--raio-borda);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   z-index: 1002;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
+  transform: translateY(10px);
   transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  width: 220px;
+}
 
-  &.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+.profile-dropdown.show,
+.settings-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.profile-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--cor-texto-secundario);
+  font-weight: 400;
+  font-size: 1.4rem;
+  text-decoration: none;
+
+  i {
+    width: 20px;
+    font-size: 1rem;
   }
 
-  a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    text-decoration: none;
-    color: $text-color-dark;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-
-    i {
-      font-size: 1rem;
-      width: 20px;
-      text-align: center;
-      color: $text-color-light;
-    }
-
-    &:hover {
-      background-color: $dropdown-hover;
-      color: $primary-color;
-      i {
-        color: $primary-color;
-      }
-    }
-
-    // Estilo específico para o Sair
-    &:last-child {
-      border-top: 1px solid $border-color;
-      &:hover {
-        color: $danger-color;
-        i {
-          color: $danger-color;
-        }
-      }
-    }
+  &:hover {
+    background-color: var(--cor-fundo-pagina);
+    color: var(--cor-primaria);
   }
 }
 
-/* Responsividade (Ajuste simplificado) */
-@media (max-width: 600px) {
-  .header-container {
-    padding: 0 10px;
+.settings-dropdown {
+  width: 280px;
+  padding: 0.5rem 0;
+
+  .settings-header {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: var(--cor-texto);
+    border-bottom: 1px solid var(--cor-borda);
   }
-  .page-title {
-    font-size: 1.2em;
-  }
-  .profile-btn span {
-    display: none; /* Esconde o nome em telas pequenas */
-  }
-  .profile-btn {
-    padding: 0;
-    width: 40px; /* Volta a ser um ícone redondo */
-  }
-  .action-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
-    padding: 8px;
+
+  .settings-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--cor-texto-secundario);
+    }
+
+    .theme-options {
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border: 2px solid var(--cor-borda);
+        background-color: var(--cor-fundo-pagina);
+        border-radius: var(--raio-borda);
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.active {
+          border-color: var(--cor-primaria);
+          background-color: var(--cor-primaria-clara);
+          color: var(--cor-primaria);
+        }
+
+        &:hover:not(.active) {
+          background-color: var(--cor-borda);
+        }
+      }
+    }
   }
 }

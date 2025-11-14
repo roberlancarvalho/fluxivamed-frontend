@@ -18,7 +18,6 @@ import { MedicoResponseDTO, MedicoService } from '../../../../core/services/medi
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     MatCardModule,
     MatTableModule,
     MatProgressSpinnerModule,
@@ -51,7 +50,7 @@ export class MedicoListComponent implements OnInit, OnDestroy {
     private medicoService: MedicoService,
     private router: Router,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.carregarMedicos();
@@ -97,9 +96,25 @@ export class MedicoListComponent implements OnInit, OnDestroy {
     }
 
     if (confirm(`Tem certeza que deseja excluir o médico ID ${id}?`)) {
-      console.log('Excluir médico ID:', id);
-      // Implementar exclusão no service e chamar aqui
-      // this.medicoService.excluirMedico(id).subscribe(() => ...);
+
+      // --- LÓGICA DE EXCLUSÃO ATIVADA ---
+      this.medicoService.excluirMedico(id).subscribe({
+        next: () => {
+          this._snackBar.open('Médico excluído com sucesso!', 'Fechar', {
+            duration: 3000,
+            panelClass: ['snackbar-success'] // (opcional: crie esta classe CSS)
+          });
+          // Atualiza a tabela removendo o médico da lista local
+          this.medicos = this.medicos.filter(m => m.id !== id);
+        },
+        error: (err) => {
+          console.error('Erro ao excluir médico:', err);
+          this._snackBar.open(`Erro ao excluir: ${err.error?.message || 'Tente novamente.'}`, 'Fechar', {
+            duration: 5000,
+            panelClass: ['snackbar-error']
+          });
+        }
+      });
     }
   }
 }
